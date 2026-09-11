@@ -513,14 +513,16 @@ function renderHome(){
       <div><span class="v">${lastTest? Math.round(lastTest.score/lastTest.n*100)+'%' : '–'}</span><span class="k">${lastTest? 'последний тест' : 'тестов ещё не было'}</span></div>
     </div>
     <div class="actions">
-      <button class="action lead" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Интервальное повторение: то, что не помните, вернётся чаще.</span></button>
+      <a class="action lead" href="minimum.html" style="text-decoration:none"><span class="t">Прочитать всё подряд</span><span class="d">Конспекты 22 глав одним текстом, лента правителей и 200 ключевых дат. Начните отсюда, если готовитесь с нуля.</span></a>
+      <button class="action" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Интервальное повторение: то, что не помните, вернётся чаще.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="exam"><span class="t">Тест как на экзамене</span><span class="d">5 вопросов с выбором ответа и 9 на хронологию.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="past"><span class="t">Вариант 26.06.26</span><span class="d">Реальные вопросы прошлого экзамена, 14 штук.</span></button>
       <button class="action" type="button" data-nav="rulers"><span class="t">Лента правителей</span><span class="d">От Рюрика до наших дней: кто правил и что при нём произошло.</span></button>
     </div>
     <div class="panel stack" style="gap:8px">
       <span class="label">Если начинаете с нуля</span>
-      <p style="font-size:14.5px">Идите по главам в порядке учебника. Для каждой главы: <b>1)</b> прочитайте конспект (10 минут), <b>2)</b> пройдите карточки главы, пока большинство не станет «помню», <b>3)</b> решите тест по главе. Раз в несколько дней делайте смешанный тест по всем пройденным главам: на экзамене эпохи перемешаны.</p>
+      <p style="font-size:14.5px"><b>Если времени мало</b>, не начинайте с карточек — их 2 061, и больше половины приходится на персоны, понятия и культуру. Сначала <a href="minimum.html">прочитайте всё подряд</a>: лента правителей даёт каркас, на который ложатся даты. Потом прогоните 200 ключевых дат, и только затем — карточки и тесты.</p>
+      <p style="font-size:14.5px"><b>Если время есть</b>, идите по главам в порядке учебника: <b>1)</b> конспект главы, <b>2)</b> карточки главы, пока большинство не станет «помню», <b>3)</b> тест по главе. Раз в несколько дней — смешанный тест по всем пройденным главам: на экзамене эпохи перемешаны.</p>
     </div>
     ${chaptersByPeriod}
   </div>`;
