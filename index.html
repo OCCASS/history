@@ -854,8 +854,8 @@ function genTest(scope, mode, n){
   if (mode==='exam'){
     const mc = [['hand',55],['ruler',20],['notRuler',10],['linked',8],['look',7]];
     const sq = [['handSeq',60],['autoSeq',32],['cultSeq',8]];
-    let guard=0; while (qs.filter(q=>q.type==='mcq').length<5 && guard++<200) add(G[weighted(mc)](scope));
-    guard=0; while (qs.filter(q=>q.type==='seq').length<9 && guard++<200) add(G[weighted(sq)](scope));
+    let guard=0; while (qs.filter(q=>q.type==='mcq').length<32 && guard++<800) add(G[weighted(mc)](scope));
+    guard=0; while (qs.filter(q=>q.type==='seq').length<12 && guard++<400) add(G[weighted(sq)](scope));
     return qs;
   }
   let guard=0; while (qs.length<n && guard++<n*20) add(G[weighted(MIX)](scope));
@@ -959,9 +959,9 @@ function renderTestSetup(){
   const hist = S.tests.slice(-5).reverse();
   $app.innerHTML = `<div class="stack" style="gap:18px">
     <div class="stack" style="gap:6px"><span class="label">Тест</span><h1>Проверка в формате экзамена</h1>
-    <p class="muted">Вопросы с четырьмя вариантами ответа и задания на хронологическую последовательность, как в варианте 26.06.26.</p></div>
+    <p class="muted">Очный тест: 60 минут, 44 задания, максимум 100 баллов. Вопрос с выбором ответа – 2 балла, задание на упорядочивание и соотнесение – 3 балла.</p></div>
     <div class="actions">
-      <button class="action lead" type="button" data-test="exam"><span class="t">Как на экзамене</span><span class="d">14 заданий: 5 с выбором ответа и 9 на хронологию. Все главы.</span></button>
+      <button class="action lead" type="button" data-test="exam"><span class="t">Как на экзамене</span><span class="d">44 задания: 32 с выбором ответа и 12 на хронологию. Все главы, 60 минут.</span></button>
       <button class="action" type="button" data-test="past"><span class="t">Вариант 26.06.26</span><span class="d">Настоящие вопросы прошлого экзамена.</span></button>
       <button class="action" type="button" data-test="wrong" ${S.wrong.length?'':'disabled style="opacity:.5"'}><span class="t">Работа над ошибками</span><span class="d">${S.wrong.length? S.wrong.length+' '+plural(S.wrong.length,'вопрос','вопроса','вопросов')+', где вы ошиблись.' : 'Здесь появятся вопросы, в которых вы ошиблись.'}</span></button>
       <button class="action" type="button" data-test="mix"><span class="t">Смешанный тест</span><span class="d">По выбранным ниже главам.</span></button>
