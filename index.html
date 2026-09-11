@@ -1,0 +1,1081 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Хронограф</title>
+<meta name="description" content="Подготовка к экзамену «История России» (НИУ ВШЭ): карточки, конспекты и тесты в формате экзамена по 22 главам учебника под ред. Ю. А. Петрова.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oranienbaum&family=Golos+Text:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>:root{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+</head>
+<body>
+<style>
+:root{
+  --paper:#EEF1F0; --surface:#FBFCFB; --surface-2:#E4E9E8; --ink:#15191D; --ink-2:#39424B; --muted:#5E6873;
+  --line:#D3D9D8; --line-strong:#AEB8B7;
+  --accent:#2344A8; --accent-ink:#FFFFFF; --accent-soft:#DDE4F6;
+  --good:#1F7A4D; --good-soft:#D9EFE3; --bad:#B3261E; --bad-soft:#F7DEDB; --warn:#9A6400; --warn-soft:#F5E9CF;
+  --ribbon-ink:#FFFFFF; --p0:#5E6873; --p1:#A8741F; --p2:#8A4F7D; --p3:#2C7A6A; --p4:#2344A8; --p5:#B3402E; --p6:#4C6274;
+  --shadow:0 1px 0 rgba(21,25,29,.06),0 8px 24px -12px rgba(21,25,29,.25);
+  --f-display:"Oranienbaum","Playfair Display","Times New Roman",serif;
+  --f-body:"Golos Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101316; --surface:#181C21; --surface-2:#222830; --ink:#E7EAED; --ink-2:#C3CAD1; --muted:#909AA5;
+    --line:#2B323A; --line-strong:#46505B;
+    --accent:#8FA8F2; --accent-ink:#0E1420; --accent-soft:#1F2A45;
+    --good:#5DC08D; --good-soft:#15301F; --bad:#F08A80; --bad-soft:#3A1C1A; --warn:#E0B458; --warn-soft:#352A12;
+    --ribbon-ink:#101316; --p0:#909AA5; --p1:#D9A551; --p2:#C98DBB; --p3:#5FBFA9; --p4:#8FA8F2; --p5:#EE8069; --p6:#8FA7BA;
+    --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101316; --surface:#181C21; --surface-2:#222830; --ink:#E7EAED; --ink-2:#C3CAD1; --muted:#909AA5;
+  --line:#2B323A; --line-strong:#46505B;
+  --accent:#8FA8F2; --accent-ink:#0E1420; --accent-soft:#1F2A45;
+  --good:#5DC08D; --good-soft:#15301F; --bad:#F08A80; --bad-soft:#3A1C1A; --warn:#E0B458; --warn-soft:#352A12;
+  --ribbon-ink:#101316; --p0:#909AA5; --p1:#D9A551; --p2:#C98DBB; --p3:#5FBFA9; --p4:#8FA8F2; --p5:#EE8069; --p6:#8FA7BA;
+  --shadow:0 1px 0 rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0;padding-inline:16px;padding-block:0 96px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.wrap{max-width:780px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-wrap:balance;margin:0;letter-spacing:.005em}
+h1{font-size:34px;line-height:1.1}
+h2{font-size:26px;line-height:1.15}
+h3{font-size:20px;line-height:1.2}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.label{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+p{margin:0}
+b,strong{font-weight:600}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+.top .wrap{display:flex;align-items:center;gap:16px;height:56px}
+.brand{display:flex;align-items:baseline;gap:10px;background:none;border:0;padding:0}
+.brand .word{font-family:var(--f-display);font-size:26px;line-height:1;letter-spacing:.02em}
+.brand .sub{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tabs{display:flex;gap:2px;margin-left:auto}
+.tab{background:none;border:0;padding:8px 12px;border-radius:8px;color:var(--ink-2);font-weight:500;font-size:14px}
+.tab:hover{background:var(--surface-2)}
+.tab[aria-current="page"]{color:var(--accent);background:var(--accent-soft)}
+.tabbar{display:none}
+@media (max-width:720px){
+  .tabs{display:none}
+  .brand .sub{display:none}
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .tabbar button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);padding:4px 0;border-radius:8px}
+  .tabbar button svg{width:22px;height:22px}
+  .tabbar button[aria-current="page"]{color:var(--accent)}
+  h1{font-size:29px}
+}
+
+main{padding-block:22px 24px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.section{display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.hr{height:1px;background:var(--line);border:0;margin:4px 0}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line-strong);background:var(--surface);border-radius:9px;padding:10px 14px;font-weight:500;font-size:14.5px;min-height:42px;text-align:center}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--accent);padding-inline:8px}
+.btn.ghost:hover{background:var(--accent-soft)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-strong);background:transparent;border-radius:999px;padding:5px 11px;font-size:13px;font-weight:500;color:var(--ink-2);min-height:32px}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+.tag{display:inline-flex;align-items:center;gap:6px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.tag .sw{width:8px;height:8px;border-radius:2px}
+
+/* period ribbon */
+.ribbon{display:flex;flex-direction:column;gap:6px}
+.ribbon-bar{display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.ribbon-bar button{border:0;padding:0 6px;box-shadow:inset -1px 0 0 rgba(255,255,255,.35);color:var(--ribbon-ink);font-size:11.5px;font-weight:600;display:flex;align-items:center;justify-content:flex-start;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0}
+.ribbon-bar button:hover{filter:brightness(1.1)}
+.ribbon-bar button span{overflow:hidden;text-overflow:ellipsis}
+.ribbon-scale{display:flex}
+.ribbon-scale span{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);border-left:1px solid var(--line-strong);padding-left:4px;line-height:1.1;overflow:hidden}
+
+/* stat line */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.stats > div{padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.stats > div + div{border-left:1px solid var(--line)}
+.stats .v{font-family:var(--f-mono);font-size:22px;font-weight:500;font-variant-numeric:tabular-nums}
+.stats .k{font-size:12.5px;color:var(--muted);line-height:1.3}
+.bar{height:6px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+/* actions grid */
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.action{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;min-height:108px}
+.action:hover{border-color:var(--line-strong)}
+.action .t{font-family:var(--f-display);font-size:21px;line-height:1.1}
+.action .d{font-size:13px;color:var(--muted);line-height:1.4}
+.action.lead{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.action.lead .d{color:color-mix(in srgb,var(--accent-ink) 78%,transparent)}
+@media (max-width:420px){.actions{grid-template-columns:1fr}.action{min-height:0}}
+
+/* chapter list */
+.period-head{display:flex;align-items:baseline;gap:10px;padding-top:6px}
+.period-head .sw{width:10px;height:10px;border-radius:2px;flex:none;transform:translateY(-1px)}
+.period-head h3{font-size:19px}
+.period-head .yrs{margin-left:auto;font-family:var(--f-mono);font-size:11.5px;color:var(--muted);white-space:nowrap}
+.chlist{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.chrow{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:11px 14px;background:none;border:0;text-align:left;width:100%}
+.chrow + .chrow{border-top:1px solid var(--line)}
+.chrow:hover{background:var(--surface-2)}
+.chrow .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.chrow .ti{font-size:14.5px;font-weight:500;line-height:1.3}
+.chrow .pr{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:64px}
+.chrow .pr .bar{width:64px;height:4px}
+.chrow .pr small{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+
+/* scope picker */
+.scope{display:flex;flex-direction:column;gap:10px}
+.scope details{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.scope summary{list-style:none;cursor:pointer;padding:10px 14px;display:flex;align-items:center;gap:8px;font-weight:500;font-size:14px}
+.scope summary::-webkit-details-marker{display:none}
+.scope summary .v{margin-left:auto;color:var(--muted);font-weight:400;font-size:13px;text-align:right}
+.scope summary::after{content:"";width:8px;height:8px;border-right:1.5px solid var(--muted);border-bottom:1.5px solid var(--muted);transform:rotate(45deg) translateY(-3px);margin-left:4px;flex:none}
+.scope details[open] summary::after{transform:rotate(-135deg) translateY(-1px)}
+.scope .body{padding:4px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.chk{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:start;font-size:13.5px;line-height:1.35;padding:3px 0}
+.chk input{width:17px;height:17px;margin:1px 0 0;accent-color:var(--accent)}
+
+/* flashcard: library catalogue card */
+.card-stage{display:flex;flex-direction:column;gap:14px}
+.fc{position:relative;background:var(--surface);border:1px solid var(--line-strong);border-radius:6px;box-shadow:var(--shadow);min-height:330px;padding:18px 20px 34px;display:flex;flex-direction:column;gap:14px;cursor:pointer;user-select:text;border-top:5px solid var(--pc,var(--accent))}
+.fc::before{content:"";position:absolute;left:0;right:0;top:44px;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 6px,transparent 6px 10px)}
+.fc::after{content:"";position:absolute;left:50%;bottom:10px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--paper);border:1px solid var(--line-strong)}
+.fc .shelf{display:flex;justify-content:space-between;gap:10px;height:18px;align-items:center}
+.fc .shelf .code{font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.04em;white-space:nowrap}
+.fc .front-title{font-family:var(--f-display);font-size:30px;line-height:1.12;text-wrap:balance;margin-top:14px}
+.fc .hint{font-size:13px;color:var(--muted)}
+.fc .flip-note{margin-top:auto;font-size:12.5px;color:var(--muted);text-align:center}
+.fc .back{display:flex;flex-direction:column;gap:12px}
+.fc .back-title{font-family:var(--f-display);font-size:23px;line-height:1.15;text-wrap:balance}
+.stamp{display:inline-flex;align-self:flex-start;align-items:center;gap:8px;font-family:var(--f-mono);font-weight:500;font-size:17px;color:var(--pc,var(--accent));border:1.5px solid var(--pc,var(--accent));border-radius:4px;padding:3px 10px;box-shadow:inset 0 0 0 2px var(--surface),inset 0 0 0 3px color-mix(in srgb,var(--pc,var(--accent)) 50%,transparent);letter-spacing:.02em}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px}
+.kv dt{color:var(--muted);font-size:12.5px;padding-top:1px}
+.kv dd{margin:0}
+.fc ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:3px;font-size:14px}
+.fc .desc{font-size:15px;line-height:1.55}
+.fc .look{font-size:13.5px;background:var(--surface-2);border-radius:6px;padding:8px 10px;line-height:1.45}
+.fc img,.q-img{max-width:100%;height:auto;border-radius:4px;border:1px solid var(--line);display:block}
+.fc .front-img{max-height:260px;width:auto;margin:6px auto 0}
+.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rate .btn{flex-direction:column;gap:0;line-height:1.2;padding:8px 6px}
+.rate .btn small{font-size:11px;font-weight:400;color:var(--muted)}
+.rate .no{border-color:color-mix(in srgb,var(--bad) 55%,var(--line))}
+.rate .mid{border-color:color-mix(in srgb,var(--warn) 55%,var(--line))}
+.rate .yes{border-color:color-mix(in srgb,var(--good) 55%,var(--line))}
+.rate .no:hover{background:var(--bad-soft)} .rate .mid:hover{background:var(--warn-soft)} .rate .yes:hover{background:var(--good-soft)}
+.progress-line{display:flex;align-items:center;gap:10px;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.progress-line .bar{flex:1}
+.boxes{display:flex;gap:3px}
+.boxes i{width:10px;height:10px;border-radius:2px;border:1px solid var(--line-strong)}
+.boxes i.on{background:var(--good);border-color:var(--good)}
+
+/* test */
+.q{display:flex;flex-direction:column;gap:14px}
+.q-text{font-size:18px;font-weight:500;line-height:1.4;text-wrap:pretty}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;text-align:left;background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;padding:11px 14px;font-size:15px;line-height:1.4}
+.opt:hover:not([disabled]){border-color:var(--ink-2)}
+.opt .let{font-family:var(--f-mono);font-size:13px;color:var(--muted);padding-top:1px}
+.opt[disabled]{cursor:default}
+.opt.right{background:var(--good-soft);border-color:var(--good)}
+.opt.right .let{color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.opt.wrong .let{color:var(--bad)}
+.seq{display:flex;flex-direction:column;gap:8px}
+.seq-item{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;padding:10px 12px;font-size:15px;line-height:1.35}
+.seq-item .num{width:28px;height:28px;border-radius:50%;border:1.5px dashed var(--line-strong);display:grid;place-items:center;font-family:var(--f-mono);font-size:13px;font-weight:600;color:var(--muted)}
+.seq-item.set .num{border-style:solid;border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.seq-item .d{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);white-space:nowrap}
+.seq-item.ok{border-color:var(--good);background:var(--good-soft)} .seq-item.ok .num{background:var(--good);border-color:var(--good);color:var(--surface)}
+.seq-item.bad{border-color:var(--bad);background:var(--bad-soft)} .seq-item.bad .num{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.answer-line{font-size:14px;line-height:1.5;border-left:3px solid var(--good);padding:6px 0 6px 12px}
+.answer-line.bad{border-left-color:var(--bad)}
+.verdict{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.verdict.ok{color:var(--good)} .verdict.no{color:var(--bad)}
+.chain{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:14px}
+.chain .arrow{color:var(--muted)}
+.chain span.y{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.explain-ai{font-size:14.5px;line-height:1.6;background:var(--accent-soft);border-radius:8px;padding:12px 14px;white-space:pre-wrap}
+.score{font-family:var(--f-display);font-size:64px;line-height:1}
+.mistake{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-top:1px solid var(--line)}
+.mistake .qq{font-weight:500}
+.mistake .aa{font-size:14px}
+
+/* rulers timeline */
+.tl{display:flex;flex-direction:column}
+.tl-period{display:flex;flex-direction:column;gap:0;margin-bottom:18px}
+.tl-period > header{display:flex;align-items:baseline;gap:10px;padding:0 0 8px}
+.tl-period > header .sw{width:10px;height:10px;border-radius:2px;transform:translateY(-1px)}
+.tl-list{border-left:2px solid var(--pc);margin-left:4px;display:flex;flex-direction:column}
+.ruler{position:relative;padding-left:16px}
+.ruler::before{content:"";position:absolute;left:-6px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--pc)}
+.ruler > button{display:grid;grid-template-columns:112px 1fr auto;gap:10px;align-items:baseline;width:100%;text-align:left;background:none;border:0;padding:10px 6px;border-radius:8px}
+.ruler > button:hover{background:var(--surface-2)}
+.ruler .yrs{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ruler .nm{font-family:var(--f-display);font-size:19px;line-height:1.15}
+.ruler .cnt{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.ruler .more{padding:2px 6px 14px;display:flex;flex-direction:column;gap:10px}
+.evlist{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.evlist > div{display:grid;grid-template-columns:96px 1fr;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.35}
+.evlist .dt{font-family:var(--f-mono);font-size:12px;color:var(--muted);padding-top:2px}
+.evlist .ty{font-family:var(--f-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:6px}
+@media (max-width:520px){.ruler > button{grid-template-columns:1fr auto}.ruler .yrs{grid-column:1/-1;order:-1}.evlist > div{grid-template-columns:78px 1fr}}
+
+/* notes */
+.summary p{font-size:15.5px;line-height:1.65;max-width:66ch}
+.summary{display:flex;flex-direction:column;gap:12px}
+details.sec{border-top:1px solid var(--line)}
+details.sec > summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:10px;padding:14px 0}
+details.sec > summary::-webkit-details-marker{display:none}
+details.sec > summary h3{font-size:21px}
+details.sec > summary .c{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+details.sec > summary::after{content:"+";margin-left:auto;font-family:var(--f-mono);color:var(--muted);font-size:18px}
+details.sec[open] > summary::after{content:"–"}
+.items{display:flex;flex-direction:column;gap:0;padding-bottom:12px}
+.item{padding:10px 0;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.item:last-child{border-bottom:0}
+.item .h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.item .h b{font-weight:600;font-size:15px}
+.item .h .dt{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.item .x{font-size:14px;line-height:1.5;color:var(--ink-2)}
+.search{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;padding:0 12px}
+.search input{border:0;background:transparent;padding:11px 0;width:100%;outline:none;font-size:15px}
+.search svg{flex:none;color:var(--muted)}
+.back-link{align-self:flex-start}
+.note{font-size:13px;color:var(--muted);line-height:1.45}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+.kbd{font-family:var(--f-mono);font-size:11px;border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;padding:0 4px}
+@media (prefers-reduced-motion:no-preference){
+  .fc{transition:transform .18s ease}
+  .fc.flip{animation:flip .22s ease}
+  @keyframes flip{from{transform:rotateX(8deg) scale(.985);opacity:.6}to{transform:none;opacity:1}}
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <button class="brand" id="brand" type="button" aria-label="На главную"><span class="word">Хронограф</span><span class="sub">История России · ВШЭ</span></button>
+    <nav class="tabs" id="tabs" aria-label="Разделы"></nav>
+  </div>
+</header>
+<main class="wrap" id="app" aria-live="polite"></main>
+<nav class="tabbar" id="tabbar" aria-label="Разделы"></nav>
+
+<script src="data.js"></script>
+<script>
+(function(){
+"use strict";
+const D = window.HDATA;
+const $app = document.getElementById('app');
+
+/* ---------- helpers ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const norm = s => String(s||'').toLowerCase().replace(/ё/g,'е').replace(/[«»"().,:;!?–-]/g,' ').replace(/\s+/g,' ').trim();
+const plural = (n, a, b, c) => { const m10=n%10, m100=n%100; return (m10===1&&m100!==11)?a:(m10>=2&&m10<=4&&(m100<10||m100>=20))?b:c; };
+const LET = ['a','b','c','d'];
+
+/* ---------- store (per-browser) ---------- */
+const KEY = 'hronograf.v1';
+let S = { box:{}, seen:{}, wrong:[], tests:[], scope:null, cats:null, dir:'fwd', size:20 };
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
+
+/* ---------- data index ---------- */
+const RUL = {}; D.rulers.forEach((r,i)=>{ RUL[r.id] = Object.assign({}, r, {idx:i}); });
+const PER = D.periods;
+const CHS = D.chapters.slice().sort((a,b)=>a.chapter-b.chapter);
+const CHN = {}; CHS.forEach(c=>CHN[c.chapter]=c);
+const ALL_CH = CHS.map(c=>c.chapter);
+const pc = n => `var(--p${n})`;
+const chColor = ch => pc(CHN[ch] ? CHN[ch].period : 0);
+
+const CATS = [
+  {id:'rulers', label:'Правители', hint:'периоды по правителям'},
+  {id:'people', label:'Персоны', hint:'действующие лица и их роли'},
+  {id:'internal', label:'Внутренняя политика', hint:'события и реформы'},
+  {id:'foreign', label:'Внешняя политика', hint:'войны, битвы, договоры'},
+  {id:'culture', label:'Культура', hint:'памятники, произведения, артефакты'},
+  {id:'terms', label:'Понятия', hint:'термины'}
+];
+const CATL = Object.fromEntries(CATS.map(c=>[c.id,c.label]));
+if (!S.scope) S.scope = ALL_CH.slice();
+if (!S.cats) S.cats = CATS.map(c=>c.id);
+
+// flat cards
+const CARDS = []; const CARD = {};
+const rulerEvents = {};   // ruler id -> events (all chapters, deduped)
+const rulerNotes = {};
+const rulerChapters = {};
+const seenEvTitle = new Set();
+CHS.forEach(ch => {
+  const n = ch.chapter;
+  Object.entries(ch.ruler_notes||{}).forEach(([id,t])=>{ (rulerNotes[id] = rulerNotes[id]||[]).push(t); });
+  (ch.events||[]).forEach(e => {
+    const c = {key:'e:'+e.id, kind:'event', cat:e.type, ch:n, title:e.title, d:e};
+    CARDS.push(c);
+    if (e.ruler){
+      (rulerChapters[e.ruler] = rulerChapters[e.ruler]||new Set()).add(n);
+      const k = e.ruler+'|'+norm(e.title);
+      if (!seenEvTitle.has(k)){ seenEvTitle.add(k); (rulerEvents[e.ruler] = rulerEvents[e.ruler]||[]).push(Object.assign({ch:n}, e)); }
+    }
+  });
+  (ch.people||[]).forEach(p => CARDS.push({key:'p:'+p.id, kind:'person', cat:'people', ch:n, title:p.name, d:p}));
+  (ch.culture||[]).forEach(p => CARDS.push({key:'c:'+p.id, kind:'culture', cat:'culture', ch:n, title:p.title, d:p}));
+  (ch.terms||[]).forEach((t,i) => CARDS.push({key:'t:'+n+':'+i, kind:'term', cat:'terms', ch:n, title:t.term, d:t}));
+});
+Object.values(rulerEvents).forEach(l => l.sort((a,b)=>(a.year-b.year)||((a.month||0)-(b.month||0))));
+D.rulers.forEach(r => {
+  const chs = [...(rulerChapters[r.id]||[])];
+  if (!chs.length) return;
+  CARDS.push({key:'r:'+r.id, kind:'ruler', cat:'rulers', ch:Math.min(...chs), chs, title:r.name, d:RUL[r.id]});
+});
+CARDS.forEach(c=>CARD[c.key]=c);
+const inScope = (c, scope) => c.chs ? c.chs.some(x=>scope.includes(x)) : scope.includes(c.ch);
+function deckFor(scope, cats){
+  const seen = new Set(); const out = [];
+  CARDS.forEach(c => {
+    if (!cats.includes(c.cat) || !inScope(c, scope)) return;
+    const k = c.kind+'|'+norm(c.title);
+    if (seen.has(k)) return; seen.add(k); out.push(c);
+  });
+  return out;
+}
+const learned = c => (S.box[c.key]||0) >= 3;
+function chapterStats(n){
+  const d = deckFor([n], CATS.map(c=>c.id)).filter(c=>c.kind!=='ruler');
+  const l = d.filter(learned).length;
+  return {total:d.length, learned:l};
+}
+
+/* ---------- navigation ---------- */
+const ICONS = {
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10"/></svg>',
+  cards:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3.5" y="6" width="14" height="13" rx="1.5"/><path d="M7 3.5h12a1.5 1.5 0 0 1 1.5 1.5v11"/><circle cx="10.5" cy="16" r="1"/></svg>',
+  test:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h14v16H5z"/><path d="m8 9 1.5 1.5L12 8M8 15l1.5 1.5L12 14M14 9.5h2.5M14 15.5h2.5"/></svg>',
+  rulers:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 3v18"/><circle cx="6" cy="6" r="2" fill="currentColor"/><circle cx="6" cy="12" r="2" fill="currentColor"/><circle cx="6" cy="18" r="2" fill="currentColor"/><path d="M10 6h10M10 12h8M10 18h10"/></svg>',
+  notes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5C6.5 4 9.5 4 12 5.5v14C9.5 18 6.5 18 4 19.5z"/><path d="M20 5.5C17.5 4 14.5 4 12 5.5v14c2.5-1.5 5.5-1.5 8 0z"/></svg>'
+};
+const VIEWS = [
+  {id:'home', label:'Главная'}, {id:'cards', label:'Карточки'}, {id:'test', label:'Тест'},
+  {id:'rulers', label:'Правители'}, {id:'notes', label:'Конспекты'}
+];
+let view = 'home', viewArg = null;
+function nav(v, arg){ if (view==='test' && v!=='test' && test && test.i>=test.qs.length) test = null; view = v; viewArg = arg ?? null; render(); window.scrollTo({top:0}); }
+function renderNav(){
+  document.getElementById('tabs').innerHTML = VIEWS.map(v=>`<button class="tab" type="button" data-nav="${v.id}" ${view===v.id?'aria-current="page"':''}>${v.label}</button>`).join('');
+  document.getElementById('tabbar').innerHTML = VIEWS.map(v=>`<button type="button" data-nav="${v.id}" ${view===v.id?'aria-current="page"':''}>${ICONS[v.id]}<span>${v.label}</span></button>`).join('');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-nav]');
+  if (b){ e.preventDefault(); const a = b.dataset.arg; nav(b.dataset.nav, a!==undefined ? (isNaN(+a)? a : +a) : null); }
+});
+document.getElementById('brand').onclick = () => nav('home');
+
+/* ---------- Claude explain (optional) ---------- */
+let SAMPLE = null;
+try {
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('sample').then(s => { SAMPLE = s || null; if (SAMPLE) document.querySelectorAll('[data-ai-slot]').forEach(el=>el.hidden=false); }).catch(()=>{});
+  }
+} catch(e) {}
+const AI_RULES = 'Ты – доброжелательный преподаватель истории России. Студент готовится к экзамену по курсу «История России» (НИУ ВШЭ, учебник под ред. Ю. А. Петрова, 2024) и начинает почти с нуля. Объясни тему ниже простым языком: сначала контекст (что было до и почему это произошло), затем суть, затем последствия и значение, в конце – короткий приём, как запомнить дату или факт. 6–10 предложений, обычный текст без заголовков, markdown и маркированных списков, по-русски. Вместо длинного тире используй короткое «–». Не выдумывай фактов: если не уверен в детали, опусти её.';
+function aiSlot(prompt){
+  const id = 'ai'+Math.random().toString(36).slice(2,8);
+  AI_PROMPTS[id] = prompt;
+  return `<div data-ai-slot ${SAMPLE?'':'hidden'} class="stack" style="gap:8px"><button class="btn ghost" type="button" data-ai="${id}" style="align-self:flex-start">Объяснить подробнее</button><div id="${id}-out" hidden class="explain-ai"></div></div>`;
+}
+const AI_PROMPTS = {};
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-ai]'); if (!b || !SAMPLE) return;
+  e.stopPropagation();
+  const id = b.dataset.ai, out = document.getElementById(id+'-out');
+  b.disabled = true; out.hidden = false; out.textContent = 'Думаю…';
+  try {
+    await SAMPLE(AI_RULES + '\n\n' + AI_PROMPTS[id], { onText: ({text}) => { out.textContent = text.replace(/—/g,'–'); } });
+    b.hidden = true;
+  } catch(err) {
+    const code = err && err.code;
+    if (code === 'not_granted') { out.textContent = 'Объяснения от Claude отключены для этой страницы.'; document.querySelectorAll('[data-ai-slot]').forEach(el=>{ if(!el.contains(out)) el.hidden=true; }); SAMPLE = null; }
+    else if (code === 'rate_limited') { out.textContent = 'Слишком много запросов подряд. Попробуйте через минуту.'; b.disabled = false; }
+    else if (code === 'cancelled') { out.textContent = err.text || ''; b.disabled = false; }
+    else { out.textContent = (err && err.text) ? err.text : 'Не получилось получить объяснение. Попробуйте ещё раз.'; b.disabled = false; }
+  }
+});
+
+/* ---------- shared UI bits ---------- */
+function periodRibbon(){
+  const ps = PER.filter(p=>p.from);
+  const fx = p => `flex:${p.to-p.from} 1 0;min-width:${p.to-p.from<120?46:0}px`;
+  const bar = ps.map(p => `<button type="button" style="${fx(p)};background:${pc(p.n)}" data-nav="notes" data-arg="p${p.n}" title="${esc(p.name)}"><span>${esc(p.short)}</span></button>`).join('');
+  const sc = ps.map(p => `<span style="${fx(p)}">${p.from}</span>`).join('');
+  return `<div class="ribbon"><div class="ribbon-bar">${bar}</div><div class="ribbon-scale">${sc}</div><p class="note">Длина периода на шкале примерно пропорциональна его продолжительности: от призвания Рюрика (862) до наших дней. Нажмите на период, чтобы открыть его главы.</p></div>`;
+}
+function scopeLabel(scope){
+  if (scope.length === ALL_CH.length) return 'все 22 главы';
+  if (scope.length === 1) return 'гл. '+scope[0];
+  return scope.length + ' ' + plural(scope.length,'глава','главы','глав');
+}
+function scopePicker(opts){
+  const withCats = opts && opts.cats;
+  const periodChips = PER.map(p => {
+    const chs = CHS.filter(c=>c.period===p.n).map(c=>c.chapter);
+    const on = chs.every(x=>S.scope.includes(x));
+    return `<button class="chip" type="button" aria-pressed="${on}" data-scope-period="${p.n}"><span class="dot" style="color:${pc(p.n)}"></span>${esc(p.short)}</button>`;
+  }).join('');
+  const chList = CHS.map(c=>`<label class="chk"><input type="checkbox" id="sc-ch-${c.chapter}" data-scope-ch="${c.chapter}" ${S.scope.includes(c.chapter)?'checked':''}><span><span class="mono muted">${c.chapter}.</span> ${esc(c.title)}</span></label>`).join('');
+  const cats = withCats ? `<details ${opts.openCats?'open':''}><summary>Что учить <span class="v">${S.cats.length===CATS.length?'всё':S.cats.map(c=>CATL[c]).join(', ')}</span></summary><div class="body"><div class="row">${CATS.map(c=>`<button class="chip" type="button" aria-pressed="${S.cats.includes(c.id)}" data-cat="${c.id}">${c.label}</button>`).join('')}</div></div></details>` : '';
+  return `<div class="scope">
+    <details><summary>Главы учебника <span class="v">${scopeLabel(S.scope)}</span></summary>
+      <div class="body">
+        <div class="row">${periodChips}</div>
+        <div class="row"><button class="btn ghost" type="button" data-scope-all>Выбрать все</button><button class="btn ghost" type="button" data-scope-none>Снять все</button></div>
+        <div>${chList}</div>
+      </div>
+    </details>${cats}
+  </div>`;
+}
+function bindScope(root, after){
+  const keepOpen = () => [...root.querySelectorAll('.scope details')].map(d=>d.open);
+  const restore = st => { const ds=[...root.querySelectorAll('.scope details')]; st.forEach((o,i)=>{ if(ds[i]) ds[i].open=o; }); };
+  const rerender = () => { const st = keepOpen(); save(); after(); restore(st); };
+  root.querySelectorAll('[data-scope-period]').forEach(b => b.onclick = () => {
+    const n = +b.dataset.scopePeriod; const chs = CHS.filter(c=>c.period===n).map(c=>c.chapter);
+    const on = chs.every(x=>S.scope.includes(x));
+    S.scope = on ? S.scope.filter(x=>!chs.includes(x)) : [...new Set(S.scope.concat(chs))].sort((a,b)=>a-b);
+    rerender();
+  });
+  root.querySelectorAll('[data-scope-ch]').forEach(i => i.onchange = () => {
+    const n = +i.dataset.scopeCh;
+    S.scope = i.checked ? [...new Set(S.scope.concat([n]))].sort((a,b)=>a-b) : S.scope.filter(x=>x!==n);
+    rerender();
+  });
+  const all = root.querySelector('[data-scope-all]'); if (all) all.onclick = () => { S.scope = ALL_CH.slice(); rerender(); };
+  const none = root.querySelector('[data-scope-none]'); if (none) none.onclick = () => { S.scope = []; rerender(); };
+  root.querySelectorAll('[data-cat]').forEach(b => b.onclick = () => {
+    const id = b.dataset.cat;
+    S.cats = S.cats.includes(id) ? S.cats.filter(x=>x!==id) : S.cats.concat([id]);
+    rerender();
+  });
+}
+
+/* ---------- HOME ---------- */
+function renderHome(){
+  const deck = deckFor(ALL_CH, CATS.map(c=>c.id));
+  const L = deck.filter(learned).length;
+  const qCount = CHS.reduce((s,c)=>s+(c.mcq||[]).length+(c.sequences||[]).length,0);
+  const lastTest = S.tests[S.tests.length-1];
+  const chaptersByPeriod = PER.map(p => {
+    const chs = CHS.filter(c=>c.period===p.n);
+    if (!chs.length) return '';
+    const yrs = p.from ? `${p.from}–${p.to===2026?'наши дни':p.to}` : '';
+    return `<div class="section" style="gap:8px">
+      <div class="period-head"><span class="sw" style="background:${pc(p.n)}"></span><h3>${esc(p.name)}</h3><span class="yrs">${yrs}</span></div>
+      <div class="chlist">${chs.map(c=>{ const st = chapterStats(c.chapter); const pct = st.total? Math.round(st.learned/st.total*100):0;
+        return `<button class="chrow" type="button" data-nav="notes" data-arg="${c.chapter}"><span class="n">Гл. ${c.chapter}</span><span class="ti">${esc(c.title)}</span><span class="pr"><span class="bar"><i style="width:${pct}%;background:${pc(c.period)}"></i></span><small>${st.learned}/${st.total}</small></span></button>`; }).join('')}</div>
+    </div>`;
+  }).join('');
+  $app.innerHTML = `<div class="stack" style="gap:22px">
+    <div class="stack" style="gap:10px">
+      <span class="label">«История России» · учебник под ред. Ю. А. Петрова, 2024</span>
+      <h1>Двенадцать веков в карточках и вопросах</h1>
+      <p class="muted" style="max-width:62ch">${deck.length} карточек и ${qCount} вопросов по 22 главам. Правители, персоны, реформы, войны и договоры, памятники культуры. Тесты составлены в формате экзамена: четыре варианта ответа или хронологическая последовательность.</p>
+    </div>
+    ${periodRibbon()}
+    <div class="stats">
+      <div><span class="v">${L}<span class="muted" style="font-size:14px">/${deck.length}</span></span><span class="k">карточек выучено</span></div>
+      <div><span class="v">${S.wrong.length}</span><span class="k">${plural(S.wrong.length,'вопрос','вопроса','вопросов')} в разборе ошибок</span></div>
+      <div><span class="v">${lastTest? Math.round(lastTest.score/lastTest.n*100)+'%' : '–'}</span><span class="k">${lastTest? 'последний тест' : 'тестов ещё не было'}</span></div>
+    </div>
+    <div class="actions">
+      <button class="action lead" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Интервальное повторение: то, что не помните, вернётся чаще.</span></button>
+      <button class="action" type="button" data-nav="test" data-arg="exam"><span class="t">Тест как на экзамене</span><span class="d">5 вопросов с выбором ответа и 9 на хронологию.</span></button>
+      <button class="action" type="button" data-nav="test" data-arg="past"><span class="t">Вариант 26.06.26</span><span class="d">Реальные вопросы прошлого экзамена, 14 штук.</span></button>
+      <button class="action" type="button" data-nav="rulers"><span class="t">Лента правителей</span><span class="d">От Рюрика до наших дней: кто правил и что при нём произошло.</span></button>
+    </div>
+    <div class="panel stack" style="gap:8px">
+      <span class="label">Если начинаете с нуля</span>
+      <p style="font-size:14.5px">Идите по главам в порядке учебника. Для каждой главы: <b>1)</b> прочитайте конспект (10 минут), <b>2)</b> пройдите карточки главы, пока большинство не станет «помню», <b>3)</b> решите тест по главе. Раз в несколько дней делайте смешанный тест по всем пройденным главам: на экзамене эпохи перемешаны.</p>
+    </div>
+    ${chaptersByPeriod}
+  </div>`;
+}
+
+/* ---------- CARDS ---------- */
+let session = null;
+function buildSession(){
+  const deck = deckFor(S.scope, S.cats);
+  if (!deck.length) return null;
+  const now = Date.now();
+  const scored = deck.map(c => {
+    const b = S.box[c.key] || 0, seen = S.seen[c.key] || 0;
+    // lower box first; among seen cards, older first; unseen cards mixed in
+    const pri = b*10 + (seen ? Math.min(9, (now-seen)/3.6e6 < 1 ? 5 : 0) : 0.5) + Math.random()*3;
+    return {c, pri};
+  }).sort((a,b)=>a.pri-b.pri);
+  const size = S.size === 0 ? scored.length : Math.min(S.size, scored.length);
+  const q = scored.slice(0,size).map(x=>x.c);
+  return {queue: shuffle(q.slice(0, Math.min(q.length, size))).sort((a,b)=>(S.box[a.key]||0)-(S.box[b.key]||0)), done:0, total:q.length, flipped:false, tally:{no:0,mid:0,yes:0}};
+}
+function cardShelf(c){
+  const ch = CHN[c.ch];
+  const par = c.d.par ? ` · §${c.d.par}` : '';
+  const kindL = c.kind==='event' ? CATL[c.cat] : c.kind==='culture' ? (c.d.kind||'культура') : CATL[c.cat];
+  return `<div class="shelf"><span class="tag"><span class="sw" style="background:${chColor(c.ch)}"></span>${esc(kindL)}</span><span class="code">${c.kind==='ruler' ? 'гл. '+c.chs.join(', ') : 'гл. '+c.ch+par}</span></div>`;
+}
+function rulerShort(id){ const r = RUL[id]; return r ? r.name : ''; }
+function imgSearch(q){ return 'https://yandex.ru/images/search?text=' + encodeURIComponent(q); }
+function cardFront(c, dir){
+  const d = c.d;
+  if (dir === 'rev' && c.kind !== 'ruler'){
+    let body = '';
+    if (c.kind==='event') body = `<span class="stamp mono">${esc(d.date)}</span><p class="desc">${esc(d.desc)}</p><p class="hint">Что это за событие?</p>`;
+    if (c.kind==='person') body = `<p class="desc">${esc(d.role)}</p><p class="hint">Кто это?</p>`;
+    if (c.kind==='culture') body = `${d.img?`<img class="front-img" src="${d.img}" alt="Изображение памятника">`:''}<p class="desc">${esc(d.look || d.desc)}</p><p class="hint">${d.author?'Автор: '+esc(d.author)+'. ':''}${esc(d.date||'')} · Что это?</p>`;
+    if (c.kind==='term') body = `<p class="desc">${esc(d.def)}</p><p class="hint">Как называется это понятие?</p>`;
+    return `${cardShelf(c)}<div class="stack" style="gap:12px;margin-top:14px">${body}</div><p class="flip-note">Нажмите, чтобы проверить себя</p>`;
+  }
+  const hints = {event:'Когда? При ком? Что произошло?', person:'Кто это? Чем известен? При каком правителе?', culture:'Автор? Когда? С чем связано?', term:'Что означает?', ruler:'Годы правления? Главные события?'};
+  return `${cardShelf(c)}<div class="front-title">${esc(c.title)}</div><p class="hint">${hints[c.kind]}</p><p class="flip-note">Нажмите на карточку или пробел, чтобы перевернуть</p>`;
+}
+function cardBack(c){
+  const d = c.d; let h = '';
+  if (c.kind==='event'){
+    const r = RUL[d.ruler];
+    h = `<div class="back-title">${esc(d.title)}</div>
+      <span class="stamp">${esc(d.date)}</span>
+      <dl class="kv">${r?`<dt>Правитель</dt><dd>${esc(r.name)} <span class="muted mono" style="font-size:12px">${esc(r.years)}</span></dd>`:''}<dt>Раздел</dt><dd>${CATL[d.type]}${d.par?` · §${d.par}`:''}</dd></dl>
+      <p class="desc">${esc(d.desc)}</p>`;
+    h += aiSlot(`Тема: «${d.title}» (${d.date}). Правитель: ${r?r.name:''}. Что известно: ${d.desc}`);
+  } else if (c.kind==='person'){
+    const rs = (d.rulers||[]).map(rulerShort).filter(Boolean).join(', ');
+    h = `<div class="back-title">${esc(d.name)}</div><p class="desc">${esc(d.role)}</p>
+      ${rs?`<dl class="kv"><dt>Эпоха</dt><dd>${esc(rs)}</dd></dl>`:''}
+      ${(d.facts||[]).length?`<ul>${d.facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}`;
+    h += aiSlot(`Исторический деятель: ${d.name}. Роль: ${d.role}. Факты: ${(d.facts||[]).join('; ')}. Расскажи, кто это и чем он важен для экзамена.`);
+  } else if (c.kind==='culture'){
+    const r = RUL[d.ruler];
+    h = `<div class="back-title">${esc(d.title)}</div>
+      ${d.img?`<img src="${d.img}" alt="${esc(d.title)}">`:''}
+      <span class="stamp">${esc(d.date||'')}</span>
+      <dl class="kv">${d.author?`<dt>Автор</dt><dd>${esc(d.author)}</dd>`:''}${r?`<dt>При ком</dt><dd>${esc(r.name)}</dd>`:''}${d.place?`<dt>Где</dt><dd>${esc(d.place)}</dd>`:''}${d.linked?`<dt>Связано с</dt><dd>${esc(d.linked)}</dd>`:''}</dl>
+      <p class="desc">${esc(d.desc)}</p>
+      ${d.look?`<p class="look"><b>Как узнать на картинке:</b> ${esc(d.look)}</p>`:''}
+      ${['архитектура','живопись','иконопись','скульптура','артефакт','прикладное искусство','кино'].includes(d.kind)?`<a href="${imgSearch(d.title+(d.author?' '+d.author:''))}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Посмотреть изображения ↗</a>`:''}`;
+    h += aiSlot(`Памятник культуры: ${d.title}. Автор: ${d.author||'нет'}. Дата: ${d.date}. Связь с событиями: ${d.linked||'нет'}. Описание: ${d.desc}. Объясни, почему он важен и как его запомнить и узнать на изображении.`);
+  } else if (c.kind==='term'){
+    const r = RUL[d.ruler];
+    h = `<div class="back-title">${esc(d.term)}</div>${d.date?`<span class="stamp">${esc(d.date)}</span>`:''}<p class="desc">${esc(d.def)}</p>${r?`<dl class="kv"><dt>Правитель</dt><dd>${esc(r.name)}</dd></dl>`:''}`;
+    h += aiSlot(`Историческое понятие: «${d.term}». Определение: ${d.def}. Объясни на примерах.`);
+  } else if (c.kind==='ruler'){
+    const evs = (rulerEvents[d.id]||[]);
+    const top = evs.length > 12 ? evs.filter((e,i)=> i % Math.ceil(evs.length/12) === 0).slice(0,12) : evs;
+    h = `<div class="back-title">${esc(d.name)}</div><span class="stamp">${esc(d.years)}</span><p class="desc">${esc(d.title)}</p>
+      ${(rulerNotes[d.id]||[]).slice(0,1).map(t=>`<p class="desc">${esc(t)}</p>`).join('')}
+      ${top.length?`<div class="evlist">${top.map(e=>`<div><span class="dt">${esc(e.date)}</span><span>${esc(e.title)}</span></div>`).join('')}</div>`:''}`;
+    h += aiSlot(`Правитель: ${d.name}, ${d.years}. Главные события: ${evs.slice(0,25).map(e=>e.title+' ('+e.date+')').join('; ')}. Расскажи о правлении и главных событиях, помоги запомнить.`);
+  }
+  return `${cardShelf(c)}<div class="back" style="margin-top:14px">${h}</div>`;
+}
+function renderCards(){
+  if (!session){
+    const deck = deckFor(S.scope, S.cats);
+    const L = deck.filter(learned).length;
+    $app.innerHTML = `<div class="stack" style="gap:18px">
+      <div class="stack" style="gap:6px"><span class="label">Карточки</span><h1>Что будем учить?</h1>
+      <p class="muted">Выберите главы и категории. Карточки, которые вы отметите «не помню», вернутся в этой же сессии.</p></div>
+      ${scopePicker({cats:true})}
+      <div class="panel stack" style="gap:12px">
+        <div class="row" style="justify-content:space-between"><span>В выборке <b class="mono">${deck.length}</b> ${plural(deck.length,'карточка','карточки','карточек')}</span><span class="mono muted" style="font-size:13px">выучено ${L}</span></div>
+        <div class="bar"><i style="width:${deck.length?L/deck.length*100:0}%"></i></div>
+        <div class="stack" style="gap:6px"><span class="label">Сторона</span><div class="row">
+          <button class="chip" type="button" aria-pressed="${S.dir==='fwd'}" data-dir="fwd">Название → факты</button>
+          <button class="chip" type="button" aria-pressed="${S.dir==='rev'}" data-dir="rev">Факты → название</button></div></div>
+        <div class="stack" style="gap:6px"><span class="label">Сколько за раз</span><div class="row">
+          ${[10,20,40,0].map(n=>`<button class="chip" type="button" aria-pressed="${S.size===n}" data-size="${n}">${n||'все'}</button>`).join('')}</div></div>
+        <button class="btn primary block" type="button" id="start" ${deck.length?'':'disabled'}>Начать</button>
+        ${deck.length?'':'<p class="note">Выберите хотя бы одну главу и категорию.</p>'}
+      </div>
+      <p class="note">Прогресс хранится в этом браузере. «Выучено» – карточка трижды подряд отмечена как «помню».</p>
+    </div>`;
+    bindScope($app, renderCards);
+    $app.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>{ S.dir=b.dataset.dir; save(); renderCards(); });
+    $app.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>{ S.size=+b.dataset.size; save(); renderCards(); });
+    document.getElementById('start').onclick = () => { session = buildSession(); renderCards(); };
+    return;
+  }
+  if (!session.queue.length){
+    const t = session.tally;
+    $app.innerHTML = `<div class="stack" style="gap:18px"><span class="label">Сессия завершена</span><h1>${session.total} ${plural(session.total,'карточка','карточки','карточек')} пройдено</h1>
+      <div class="stats"><div><span class="v" style="color:var(--good)">${t.yes}</span><span class="k">помню</span></div><div><span class="v" style="color:var(--warn)">${t.mid}</span><span class="k">сомневаюсь</span></div><div><span class="v" style="color:var(--bad)">${t.no}</span><span class="k">не помню</span></div></div>
+      <div class="row"><button class="btn primary" type="button" id="again">Ещё сессия</button><button class="btn" type="button" id="setup">Изменить выборку</button><button class="btn" type="button" data-nav="test" data-arg="mix">Проверить себя тестом</button></div></div>`;
+    document.getElementById('again').onclick = () => { session = buildSession(); renderCards(); };
+    document.getElementById('setup').onclick = () => { session = null; renderCards(); };
+    return;
+  }
+  const c = session.queue[0];
+  const b = S.box[c.key]||0;
+  const pct = session.done/session.total*100;
+  $app.innerHTML = `<div class="card-stage">
+    <div class="row" style="justify-content:space-between"><button class="btn ghost back-link" type="button" id="quit">← Выборка</button><span class="boxes" title="Уровень знания">${[0,1,2].map(i=>`<i class="${b>i?'on':''}"></i>`).join('')}</span></div>
+    <div class="progress-line"><span>${session.done}/${session.total}</span><span class="bar"><i style="width:${pct}%"></i></span><span>осталось ${session.queue.length}</span></div>
+    <article class="fc ${session.flipped?'flip':''}" id="fc" tabindex="0" style="--pc:${chColor(c.ch)}" aria-label="Карточка, нажмите чтобы перевернуть">${session.flipped ? cardBack(c) : cardFront(c, S.dir)}</article>
+    ${session.flipped ? `<div class="rate">
+      <button class="btn no" type="button" data-rate="no">Не помню<small>вернётся скоро</small></button>
+      <button class="btn mid" type="button" data-rate="mid">Сомневаюсь<small>в конец очереди</small></button>
+      <button class="btn yes" type="button" data-rate="yes">Помню<small>+1 уровень</small></button></div>
+      <p class="note" style="text-align:center">Клавиши: <span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span></p>`
+    : `<button class="btn primary block" type="button" id="flip">Показать ответ</button>`}
+  </div>`;
+  const flip = () => { if (!session.flipped){ session.flipped = true; renderCards(); } };
+  document.getElementById('fc').onclick = e => { if (e.target.closest('a,button')) return; flip(); };
+  const fb = document.getElementById('flip'); if (fb) fb.onclick = flip;
+  document.getElementById('quit').onclick = () => { session = null; renderCards(); };
+  $app.querySelectorAll('[data-rate]').forEach(x => x.onclick = () => rate(x.dataset.rate));
+}
+function rate(r){
+  if (!session || !session.flipped) return;
+  const c = session.queue.shift();
+  const b = S.box[c.key]||0;
+  S.seen[c.key] = Date.now();
+  session.tally[r]++;
+  if (r==='yes'){ S.box[c.key] = Math.min(5, b+1); session.done++; }
+  else if (r==='mid'){ S.box[c.key] = Math.max(1, Math.min(b,2)); session.queue.push(c); }
+  else { S.box[c.key] = 0; session.queue.splice(Math.min(3, session.queue.length), 0, c); }
+  session.flipped = false; save(); renderCards();
+}
+document.addEventListener('keydown', e => {
+  if (view!=='cards' || !session || !session.queue.length) return;
+  if (e.target.matches('input,textarea,select')) return;
+  if (e.code==='Space' || e.key==='Enter'){ if (!session.flipped){ e.preventDefault(); session.flipped=true; renderCards(); } }
+  else if (session.flipped && ['1','2','3'].includes(e.key)){ rate({'1':'no','2':'mid','3':'yes'}[e.key]); }
+});
+
+/* ---------- QUESTION GENERATORS ---------- */
+function poolEvents(scope){
+  const seen = new Set(), out = [];
+  CHS.forEach(ch => { if (!scope.includes(ch.chapter)) return; (ch.events||[]).forEach(e => { const k = norm(e.title); if (seen.has(k)) return; seen.add(k); out.push(Object.assign({ch:ch.chapter}, e)); }); });
+  return out;
+}
+function poolOf(scope, key){
+  const seen = new Set(), out = [];
+  CHS.forEach(ch => { if (!scope.includes(ch.chapter)) return; (ch[key]||[]).forEach(x => { const k = norm(x.title||x.name||x.term||x.q); if (seen.has(k)) return; seen.add(k); out.push(Object.assign({ch:ch.chapter}, x)); }); });
+  return out;
+}
+const inReign = (r, y) => y >= r.fstart && y <= r.end;
+const keyOf = it => it.y*100 + (it.m||0);
+function mkMcq(q, correct, wrongs, explain, ch, src, extra){
+  const opts = shuffle([correct].concat(wrongs));
+  return Object.assign({type:'mcq', q, options:opts, answer:opts.indexOf(correct), explain, ch, src}, extra||{});
+}
+const G = {
+  hand(scope){ const l=[]; CHS.forEach(ch=>{ if(scope.includes(ch.chapter)) (ch.mcq||[]).forEach((m,i)=>l.push(Object.assign({type:'mcq', ch:ch.chapter, src:'m:'+ch.chapter+':'+i}, m))); }); D.imageQs.forEach((m,i)=>{ if(scope.includes(m.ch)) l.push(Object.assign({type:'mcq', src:'img:'+i}, m)); }); return l.length? pick(l) : null; },
+  handSeq(scope){ const l=[]; CHS.forEach(ch=>{ if(scope.includes(ch.chapter)) (ch.sequences||[]).forEach((s,i)=>l.push({type:'seq', q:s.q, items:shuffle(s.items), ch:ch.chapter, src:'s:'+ch.chapter+':'+i})); }); return l.length? pick(l) : null; },
+  ruler(scope){
+    const evs = poolEvents(scope).filter(e => RUL[e.ruler]);
+    for (let t=0;t<30;t++){
+      const e = pick(evs); if (!e) return null; const r = RUL[e.ruler];
+      const cand = D.rulers.filter((x,i)=> x.id!==r.id && Math.abs(i-r.idx)<=4 && !inReign(RUL[x.id], e.year) && !(x.stem && e.title.includes(x.stem)));
+      if (cand.length < 3) continue;
+      const w = shuffle(cand).slice(0,3).map(x=>'при '+x.pr);
+      return mkMcq(`${e.title} – это произошло:`, 'при '+r.pr, w, `${e.date} – ${r.name} (${r.years}). ${e.desc}`, e.ch, 'ar:'+e.id);
+    }
+    return null;
+  },
+  notRuler(scope){
+    const evs = poolEvents(scope).filter(e => RUL[e.ruler]);
+    const by = {}; evs.forEach(e=>{ const r=RUL[e.ruler]; if (inReign(r,e.year)) (by[e.ruler]=by[e.ruler]||[]).push(e); });
+    const ids = Object.keys(by).filter(k=>by[k].length>=3);
+    for (let t=0;t<30 && ids.length;t++){
+      const X = RUL[pick(ids)];
+      const own = shuffle(by[X.id]).slice(0,3);
+      const allEv = poolEvents(ALL_CH);
+      const odd = shuffle(allEv.filter(e => RUL[e.ruler] && e.ruler!==X.id && Math.abs(RUL[e.ruler].idx - X.idx) <= 3 && (e.year < X.fstart - 1 || e.year > X.end + 1) && !(X.stem && e.title.includes(X.stem))))[0];
+      if (!odd) continue;
+      const or = RUL[odd.ruler];
+      return mkMcq(`Какое событие произошло не при ${X.pr}?`, odd.title, own.map(e=>e.title), `«${odd.title}» – ${odd.date}, при ${or.pr}. ${X.name} правил: ${X.years}. Остальное: ${own.map(e=>e.title+' ('+e.date+')').join('; ')}.`, odd.ch, 'nr:'+X.id+':'+odd.id);
+    }
+    return null;
+  },
+  autoSeq(scope){
+    const evs = poolEvents(scope);
+    for (let t=0;t<40;t++){
+      const a = pick(evs); if (!a) return null;
+      const sameType = Math.random()<.5;
+      const win = pick([40,80,150]);
+      const cand = shuffle(evs.filter(e => e!==a && Math.abs(e.year-a.year)<=win && (!sameType || e.type===a.type)));
+      const chosen = [a];
+      for (const e of cand){
+        if (chosen.length===4) break;
+        if (chosen.every(x => Math.abs(x.year - e.year) >= 1)) chosen.push(e);
+      }
+      if (chosen.length<4) continue;
+      const items = chosen.map(e=>({t:e.title, d:e.date, y:e.year}));
+      const q = sameType ? (a.type==='foreign' ? 'Расположите события внешней политики в хронологической последовательности:' : 'Расположите события внутренней политики в хронологической последовательности:') : 'Расположите события в хронологической последовательности:';
+      return {type:'seq', q, items:shuffle(items), ch:a.ch, src:'as:'+chosen.map(e=>e.id).join(',')};
+    }
+    return null;
+  },
+  cultSeq(scope){
+    const cs = poolOf(scope,'culture').filter(c=>c.year);
+    for (let t=0;t<30;t++){
+      const a = pick(cs); if (!a) return null;
+      const cand = shuffle(cs.filter(c=>c!==a && Math.abs(c.year-a.year)<=150));
+      const chosen=[a];
+      for (const c of cand){ if (chosen.length===4) break; if (chosen.every(x=>Math.abs(x.year-c.year)>=3)) chosen.push(c); }
+      if (chosen.length<4) continue;
+      return {type:'seq', q:'Расположите памятники культуры в порядке их создания:', items:shuffle(chosen.map(c=>({t:c.title, d:c.date, y:c.year}))), ch:a.ch, src:'cs:'+chosen.map(c=>c.id).join(',')};
+    }
+    return null;
+  },
+  author(scope){
+    const cs = poolOf(scope,'culture').filter(c=>c.author && c.author.length<70);
+    const all = poolOf(ALL_CH,'culture').filter(c=>c.author && c.author.length<70);
+    const toks = s => new Set((s.match(/[А-ЯЁ][а-яё]{2,}/g)||[]));
+    for (let t=0;t<30;t++){
+      const c = pick(cs); if (!c) return null;
+      const T = toks(c.author);
+      if ([...T].some(x=>c.title.includes(x))) continue;
+      const w = []; const used = new Set([c.author]);
+      for (const o of shuffle(all.filter(o=>o.kind===c.kind))){
+        if (w.length===3) break;
+        if (used.has(o.author)) continue;
+        const ot = toks(o.author); if ([...ot].some(x=>T.has(x))) continue;
+        if (w.some(x=>[...toks(x)].some(y=>ot.has(y)))) continue;
+        w.push(o.author); used.add(o.author);
+      }
+      if (w.length<3) continue;
+      return mkMcq(`Кто автор: ${c.title}?`, c.author, w, `${c.title} – ${c.author}, ${c.date}. ${c.desc}`, c.ch, 'au:'+c.id);
+    }
+    return null;
+  },
+  linked(scope){
+    const cs = poolOf(scope,'culture').filter(c=>c.linked && c.linked.length<=80);
+    const all = poolOf(ALL_CH,'culture').filter(c=>c.linked && c.linked.length<=80);
+    for (let t=0;t<30;t++){
+      const c = pick(cs); if (!c) return null;
+      const w = shuffle(all.filter(o=>norm(o.linked)!==norm(c.linked) && Math.abs((o.year||0)-(c.year||0))<400)).map(o=>o.linked);
+      const uniq = [...new Set(w)].slice(0,3);
+      if (uniq.length<3) continue;
+      return mkMcq(`С каким событием связано создание: ${c.title}?`, c.linked, uniq, `${c.title} (${c.date}) связан с: ${c.linked}. ${c.desc}`, c.ch, 'li:'+c.id);
+    }
+    return null;
+  },
+  look(scope){
+    const cs = poolOf(scope,'culture').filter(c=>c.look);
+    const all = poolOf(ALL_CH,'culture');
+    for (let t=0;t<30;t++){
+      const c = pick(cs); if (!c) return null;
+      const w = shuffle(all.filter(o=>o.kind===c.kind && o.id!==c.id && norm(o.title)!==norm(c.title))).slice(0,3).map(o=>o.title);
+      if (w.length<3) continue;
+      const what = c.kind==='архитектура' ? 'Какое сооружение' : c.kind==='живопись' ? 'Какое произведение' : c.kind==='скульптура' ? 'Какой памятник' : 'Что';
+      return mkMcq(`${what} можно узнать по описанию: «${c.look}»`, c.title, w, `${c.title}${c.author?' – '+c.author:''}, ${c.date}.`, c.ch, 'lo:'+c.id, c.img?{img:c.img}:null);
+    }
+    return null;
+  },
+  person(scope){
+    const ps = poolOf(scope,'people');
+    const all = poolOf(ALL_CH,'people');
+    for (let t=0;t<30;t++){
+      const p = pick(ps); if (!p) return null;
+      const sur = (p.name.split(' ').pop()||'').slice(0,5);
+      if (sur && p.role.includes(sur)) continue;
+      const near = all.filter(o=>o.id!==p.id && Math.abs(o.ch-p.ch)<=2 && norm(o.name)!==norm(p.name));
+      const w = shuffle(near.filter(o=>o.sphere===p.sphere)).concat(shuffle(near)).map(o=>o.short||o.name);
+      const uniq = [...new Set(w)].filter(x=>x!==(p.short||p.name)).slice(0,3);
+      if (uniq.length<3) continue;
+      return mkMcq(`О ком идёт речь: ${p.role}?`, p.short||p.name, uniq, `${p.name}: ${p.role}. ${(p.facts||[]).slice(0,2).join('; ')}`, p.ch, 'pe:'+p.id);
+    }
+    return null;
+  },
+  term(scope){
+    const ts = poolOf(scope,'terms');
+    const all = poolOf(ALL_CH,'terms');
+    for (let t=0;t<30;t++){
+      const x = pick(ts); if (!x) return null;
+      const stem = norm(x.term).split(' ')[0].slice(0,5);
+      if (stem.length>=4 && norm(x.def).includes(stem)) continue;
+      const w = shuffle(all.filter(o=>norm(o.term)!==norm(x.term) && Math.abs(o.ch-x.ch)<=3)).slice(0,3).map(o=>o.term);
+      if (w.length<3) continue;
+      return mkMcq(`Какое понятие описано: «${x.def}»`, x.term, w, `${x.term}: ${x.def}`, x.ch, 'te:'+x.ch+':'+norm(x.term));
+    }
+    return null;
+  },
+  year(scope){
+    const evs = poolEvents(scope).filter(e=>/^\d{3,4}$/.test(String(e.date).trim()));
+    const e = pick(evs); if (!e) return null;
+    const ys = new Set([e.year]);
+    while (ys.size<4){ const dlt = (1+Math.floor(Math.random()*15))*(Math.random()<.5?-1:1); if (e.year+dlt<2027) ys.add(e.year+dlt); }
+    const w = [...ys].filter(y=>y!==e.year).map(String);
+    return mkMcq(`В каком году: ${e.title}?`, String(e.year), w, `${e.title} – ${e.date}. ${e.desc}`, e.ch, 'yr:'+e.id);
+  }
+};
+const MIX = [['hand',30],['handSeq',14],['ruler',12],['notRuler',6],['autoSeq',9],['cultSeq',3],['author',5],['linked',4],['look',4],['person',6],['term',5],['year',4]];
+function weighted(list){ const t = list.reduce((s,x)=>s+x[1],0); let r = Math.random()*t; for (const x of list){ r-=x[1]; if (r<=0) return x[0]; } return list[0][0]; }
+function genTest(scope, mode, n){
+  const qs = [], seen = new Set();
+  const sig = q => q.type==='seq' ? 'S|'+q.items.map(i=>norm(i.t)).sort().join('|') : 'M|'+q.q+'|'+q.options.slice().sort().join('|');
+  const add = q => { if (!q) return false; const k = q.src || q.q, g = sig(q); if (seen.has(k) || seen.has(g)) return false; seen.add(k); seen.add(g); qs.push(q); return true; };
+  if (mode==='past'){
+    D.pastExam.mcq.forEach((m,i)=>add(Object.assign({type:'mcq', src:'past:m'+i}, m)));
+    D.pastExam.seq.forEach((s,i)=>add({type:'seq', q:s.q, items:shuffle(s.items), ch:s.ch, src:'past:s'+i}));
+    return qs.map(q => q.type==='mcq' ? Object.assign({}, q) : q);
+  }
+  if (mode==='wrong'){
+    return shuffle(S.wrong).slice(0, 20).map(q => q.type==='seq' ? Object.assign({}, q, {items:shuffle(q.items)}) : q);
+  }
+  if (mode==='exam'){
+    const mc = [['hand',55],['ruler',20],['notRuler',10],['linked',8],['look',7]];
+    const sq = [['handSeq',60],['autoSeq',32],['cultSeq',8]];
+    let guard=0; while (qs.filter(q=>q.type==='mcq').length<5 && guard++<200) add(G[weighted(mc)](scope));
+    guard=0; while (qs.filter(q=>q.type==='seq').length<9 && guard++<200) add(G[weighted(sq)](scope));
+    return qs;
+  }
+  let guard=0; while (qs.length<n && guard++<n*20) add(G[weighted(MIX)](scope));
+  return shuffle(qs);
+}
+
+/* ---------- TEST UI ---------- */
+let test = null;
+function startTest(mode, n, scope){
+  const qs = genTest(scope || S.scope, mode, n);
+  if (!qs.length){ test = null; return false; }
+  test = {mode, qs, i:0, answers:[], state:null, scope: scope || S.scope};
+  return true;
+}
+function renderTest(){
+  if (viewArg && !test){
+    const a = viewArg; viewArg = null;
+    if (a==='exam') startTest('exam', 14, ALL_CH);
+    else if (a==='past') startTest('past');
+    else if (a==='mix') startTest('mix', 20);
+    else if (typeof a==='string' && a.startsWith('ch')) { const n = +a.slice(2); startTest('mix', 15, [n]); }
+  }
+  if (!test) return renderTestSetup();
+  if (test.i >= test.qs.length) return renderResults();
+  const q = test.qs[test.i];
+  const st = test.state || (test.state = {sel:null, order:[], checked:false});
+  const head = `<div class="row" style="justify-content:space-between"><button class="btn ghost back-link" type="button" id="tquit">← Выйти</button><span class="mono muted" style="font-size:12px">${test.mode==='past'?'Вариант 26.06.26 · ':''}гл. ${q.ch||'–'}</span></div>
+    <div class="progress-line"><span>${test.i+1}/${test.qs.length}</span><span class="bar"><i style="width:${test.i/test.qs.length*100}%"></i></span><span>верно ${test.answers.filter(a=>a.ok).length}</span></div>`;
+  let body = '';
+  if (q.type==='mcq'){
+    body = `<div class="q"><p class="q-text">${test.i+1}. ${esc(q.q)}</p>
+      ${q.img?`<img class="q-img" src="${q.img}" alt="Изображение к вопросу" style="max-height:340px;width:auto">`:''}
+      <div class="opts">${q.options.map((o,j)=>{
+        let cls = ''; if (st.checked){ if (j===q.answer) cls='right'; else if (j===st.sel) cls='wrong'; }
+        return `<button class="opt ${cls}" type="button" data-opt="${j}" ${st.checked?'disabled':''}><span class="let">${LET[j]}.</span><span>${esc(o)}</span></button>`; }).join('')}</div>
+      ${st.checked ? feedback(q, st) : ''}</div>`;
+  } else {
+    const sorted = q.items.slice().sort((a,b)=>keyOf(a)-keyOf(b));
+    body = `<div class="q"><p class="q-text">${test.i+1}. ${esc(q.q)}</p>
+      ${st.checked ? '' : '<p class="note">Нажимайте на пункты по порядку: первым – самое раннее. Повторное нажатие отменяет выбор.</p>'}
+      <div class="seq">${q.items.map((it,j)=>{
+        const pos = st.order.indexOf(j);
+        let cls = pos>=0 ? 'set' : '';
+        if (st.checked){ cls = (sorted[pos]===it) ? 'ok' : 'bad'; }
+        return `<button class="seq-item ${cls}" type="button" data-seq="${j}" ${st.checked?'disabled':''}><span class="num">${pos>=0?pos+1:''}</span><span>${esc(it.t)}</span><span class="d">${st.checked?esc(it.d):''}</span></button>`; }).join('')}</div>
+      ${st.checked ? feedback(q, st) : `<button class="btn primary block" type="button" id="check" ${st.order.length===4?'':'disabled'}>Проверить</button>`}</div>`;
+  }
+  $app.innerHTML = `<div class="stack">${head}${body}</div>`;
+  document.getElementById('tquit').onclick = () => { if (test.answers.length && confirm('Завершить тест и посмотреть результат?')) { test.qs = test.qs.slice(0, test.answers.length); test.i = test.qs.length; } else if (!test.answers.length) { test = null; } renderTest(); };
+  $app.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { st.sel = +b.dataset.opt; st.checked = true; record(q, st.sel===q.answer, q.options[st.sel]); renderTest(); });
+  $app.querySelectorAll('[data-seq]').forEach(b => b.onclick = () => { const j = +b.dataset.seq; const p = st.order.indexOf(j); if (p>=0) st.order.splice(p,1); else if (st.order.length<4) st.order.push(j); renderTest(); });
+  const ch = document.getElementById('check'); if (ch) ch.onclick = () => {
+    const sorted = q.items.slice().sort((a,b)=>keyOf(a)-keyOf(b));
+    const ok = st.order.every((j,p)=>q.items[j]===sorted[p]);
+    st.checked = true; record(q, ok, st.order.map(j=>q.items[j].t).join(' → ')); renderTest();
+  };
+  const nx = document.getElementById('next'); if (nx) { nx.onclick = () => { test.i++; test.state = null; renderTest(); window.scrollTo({top:0}); }; nx.focus({preventScroll:true}); }
+}
+function feedback(q, st){
+  const last = test.answers[test.answers.length-1];
+  let h = `<div class="stack" style="gap:10px"><span class="verdict ${last.ok?'ok':'no'}">${last.ok?'Верно':'Неверно'}</span>`;
+  if (q.type==='mcq'){
+    h += `<p class="answer-line ${last.ok?'':'bad'}">Правильный ответ: <b>${esc(q.options[q.answer])}</b>${q.explain?'<br>'+esc(q.explain):''}</p>`;
+  } else {
+    const sorted = q.items.slice().sort((a,b)=>keyOf(a)-keyOf(b));
+    const onPlace = st.order.filter((j,p)=>q.items[j]===sorted[p]).length;
+    h += `<div class="answer-line ${last.ok?'':'bad'}"><div class="chain">${sorted.map((it,k)=>`${k?'<span class="arrow">→</span>':''}<span>${esc(it.t)} <span class="y">${esc(it.d)}</span></span>`).join('')}</div>${last.ok?'':`<p class="note" style="margin-top:6px">На своих местах: ${onPlace} из 4.</p>`}</div>`;
+  }
+  const prompt = q.type==='mcq'
+    ? `Вопрос экзамена: «${q.q}». Варианты: ${q.options.join('; ')}. Правильный ответ: ${q.options[q.answer]}. Ответ студента: ${q.options[st.sel]}. Пояснение: ${q.explain||''}. Объясни, почему верен правильный ответ и чем плохи остальные варианты.`
+    : `Задание: «${q.q}». Правильный порядок: ${q.items.slice().sort((a,b)=>keyOf(a)-keyOf(b)).map(i=>i.t+' ('+i.d+')').join(' → ')}. Объясни каждое событие в одном-двух предложениях и как запомнить их порядок.`;
+  h += aiSlot(prompt);
+  h += `<button class="btn primary block" type="button" id="next">${test.i+1<test.qs.length?'Дальше':'Результат'}</button></div>`;
+  return h;
+}
+function record(q, ok, given){
+  test.answers.push({ok, given});
+  const k = q.src || q.q;
+  const idx = S.wrong.findIndex(w => (w.src||w.q)===k);
+  if (!ok && idx<0){ S.wrong.push(q); if (S.wrong.length>200) S.wrong.shift(); }
+  if (ok && idx>=0 && test.mode==='wrong') S.wrong.splice(idx,1);
+  save();
+}
+function renderResults(){
+  const n = test.answers.length, s = test.answers.filter(a=>a.ok).length;
+  if (!test.saved && n){ S.tests.push({t:Date.now(), n, score:s, mode:test.mode}); if (S.tests.length>50) S.tests.shift(); save(); test.saved = true; }
+  const pct = n ? Math.round(s/n*100) : 0;
+  const mistakes = test.qs.map((q,i)=>({q, a:test.answers[i]})).filter(x=>x.a && !x.a.ok);
+  $app.innerHTML = `<div class="stack" style="gap:18px">
+    <span class="label">Результат теста</span>
+    <div class="row" style="gap:18px;align-items:flex-end"><span class="score mono">${s}/${n}</span><span class="muted" style="padding-bottom:8px">${pct}% верно</span></div>
+    <div class="bar"><i style="width:${pct}%;background:${pct>=70?'var(--good)':pct>=40?'var(--warn)':'var(--bad)'}"></i></div>
+    <div class="row"><button class="btn primary" type="button" id="retry">Новый тест</button>${mistakes.length?'<button class="btn" type="button" id="wrongs">Разобрать ошибки заново</button>':''}<button class="btn" type="button" data-nav="cards">К карточкам</button></div>
+    ${mistakes.length?`<div class="section"><h2>Ошибки</h2><div>${mistakes.map(({q,a})=>`<div class="mistake"><span class="mono muted" style="font-size:11.5px">гл. ${q.ch||'–'}</span><span class="qq">${esc(q.q)}</span>
+      <span class="aa">${q.type==='mcq'?`Ваш ответ: <span style="color:var(--bad)">${esc(a.given)}</span><br>Верно: <b style="color:var(--good)">${esc(q.options[q.answer])}</b>`:`Верный порядок: ${q.items.slice().sort((x,y)=>keyOf(x)-keyOf(y)).map(i=>esc(i.t)+' <span class="mono muted" style="font-size:12px">'+esc(i.d)+'</span>').join(' → ')}`}</span></div>`).join('')}</div></div>`:'<p>Без ошибок. Отличная работа.</p>'}
+  </div>`;
+  document.getElementById('retry').onclick = () => { test = null; renderTest(); };
+  const w = document.getElementById('wrongs'); if (w) w.onclick = () => { startTest('wrong'); renderTest(); };
+}
+function renderTestSetup(){
+  const hist = S.tests.slice(-5).reverse();
+  $app.innerHTML = `<div class="stack" style="gap:18px">
+    <div class="stack" style="gap:6px"><span class="label">Тест</span><h1>Проверка в формате экзамена</h1>
+    <p class="muted">Вопросы с четырьмя вариантами ответа и задания на хронологическую последовательность, как в варианте 26.06.26.</p></div>
+    <div class="actions">
+      <button class="action lead" type="button" data-test="exam"><span class="t">Как на экзамене</span><span class="d">14 заданий: 5 с выбором ответа и 9 на хронологию. Все главы.</span></button>
+      <button class="action" type="button" data-test="past"><span class="t">Вариант 26.06.26</span><span class="d">Настоящие вопросы прошлого экзамена.</span></button>
+      <button class="action" type="button" data-test="wrong" ${S.wrong.length?'':'disabled style="opacity:.5"'}><span class="t">Работа над ошибками</span><span class="d">${S.wrong.length? S.wrong.length+' '+plural(S.wrong.length,'вопрос','вопроса','вопросов')+', где вы ошиблись.' : 'Здесь появятся вопросы, в которых вы ошиблись.'}</span></button>
+      <button class="action" type="button" data-test="mix"><span class="t">Смешанный тест</span><span class="d">По выбранным ниже главам.</span></button>
+    </div>
+    <div class="section"><h3>Смешанный тест по главам</h3>
+      ${scopePicker()}
+      <div class="row"><span class="label" style="margin-right:4px">Вопросов</span>${[10,20,30,50].map(n=>`<button class="chip" type="button" aria-pressed="${(S.tn||20)===n}" data-tn="${n}">${n}</button>`).join('')}</div>
+      <button class="btn primary block" type="button" data-test="mix" ${S.scope.length?'':'disabled'}>Начать смешанный тест · ${scopeLabel(S.scope)}</button>
+    </div>
+    ${hist.length?`<div class="section"><span class="label">Последние попытки</span><div class="evlist">${hist.map(h=>`<div><span class="dt">${new Date(h.t).toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit'})}</span><span>${{exam:'Как на экзамене',past:'Вариант 26.06.26',wrong:'Работа над ошибками',mix:'Смешанный'}[h.mode]||'Тест'} – <b class="mono">${h.score}/${h.n}</b></span></div>`).join('')}</div></div>`:''}
+  </div>`;
+  bindScope($app, renderTestSetup);
+  $app.querySelectorAll('[data-tn]').forEach(b=>b.onclick=()=>{ S.tn=+b.dataset.tn; save(); renderTestSetup(); });
+  $app.querySelectorAll('[data-test]').forEach(b=>b.onclick=()=>{
+    const m = b.dataset.test;
+    const ok = m==='exam' ? startTest('exam',14,ALL_CH) : m==='past' ? startTest('past') : m==='wrong' ? startTest('wrong') : startTest('mix', S.tn||20);
+    if (ok) renderTest();
+  });
+}
+
+/* ---------- RULERS ---------- */
+let openRuler = null;
+function renderRulers(){
+  const html = PER.filter(p=>p.from).map(p => {
+    const rs = D.rulers.filter(r=>r.period===p.n);
+    return `<section class="tl-period" style="--pc:${pc(p.n)}"><header><span class="sw" style="background:${pc(p.n)}"></span><h3>${esc(p.name)}</h3></header>
+      <div class="tl-list">${rs.map(r => {
+        const evs = rulerEvents[r.id]||[]; const open = openRuler===r.id;
+        return `<div class="ruler"><button type="button" data-ruler="${r.id}" aria-expanded="${open}"><span class="yrs">${esc(r.years)}</span><span class="nm">${esc(r.name)}</span><span class="cnt">${evs.length}</span></button>
+          ${open?`<div class="more"><p class="muted" style="font-size:13.5px">${esc(r.title)}</p>${(rulerNotes[r.id]||[]).slice(0,1).map(t=>`<p style="font-size:14.5px">${esc(t)}</p>`).join('')}
+            ${evs.length?`<div class="evlist">${evs.map(e=>`<div><span class="dt">${esc(e.date)}</span><span>${esc(e.title)}<span class="ty">${e.type==='foreign'?'внеш.':'внутр.'} · гл. ${e.ch}</span></span></div>`).join('')}</div>`:'<p class="note">В базе нет отдельных событий этого правления.</p>'}</div>`:''}</div>`;
+      }).join('')}</div></section>`;
+  }).join('');
+  $app.innerHTML = `<div class="stack" style="gap:18px"><div class="stack" style="gap:6px"><span class="label">Исторические периоды по правителям</span><h1>Лента правителей</h1>
+    <p class="muted">Нажмите на имя: откроются все события его правления из базы. Цифра справа – сколько событий.</p></div>
+    <div class="row"><button class="btn" type="button" id="rq">Тест «при каком правителе»</button></div>
+    <div class="tl">${html}</div></div>`;
+  $app.querySelectorAll('[data-ruler]').forEach(b=>b.onclick=()=>{ openRuler = openRuler===b.dataset.ruler ? null : b.dataset.ruler; const y = b.getBoundingClientRect().top; renderRulers(); const nb = $app.querySelector(`[data-ruler="${openRuler||b.dataset.ruler}"]`); if (nb) window.scrollBy(0, nb.getBoundingClientRect().top - y); });
+  document.getElementById('rq').onclick = () => {
+    const qs = []; const seen = new Set(); let g=0;
+    while (qs.length<15 && g++<300){ const q = Math.random()<.75 ? G.ruler(ALL_CH) : G.notRuler(ALL_CH); if (q && !seen.has(q.src)){ seen.add(q.src); qs.push(q); } }
+    test = {mode:'mix', qs, i:0, answers:[], state:null, scope:ALL_CH}; nav('test');
+  };
+}
+
+/* ---------- NOTES ---------- */
+let searchQ = '';
+function renderNotes(){
+  const a = viewArg;
+  if (typeof a === 'number' && CHN[a]) return renderChapter(CHN[a]);
+  const onlyP = typeof a === 'string' && a[0]==='p' ? +a.slice(1) : null;
+  const list = PER.filter(p=>onlyP===null || p.n===onlyP).map(p => {
+    const chs = CHS.filter(c=>c.period===p.n); if (!chs.length) return '';
+    return `<div class="section" style="gap:8px"><div class="period-head"><span class="sw" style="background:${pc(p.n)}"></span><h3>${esc(p.name)}</h3></div>
+      <div class="chlist">${chs.map(c=>`<button class="chrow" type="button" data-nav="notes" data-arg="${c.chapter}"><span class="n">Гл. ${c.chapter}</span><span class="ti">${esc(c.title)}</span><span class="pr"><small>${(c.events||[]).length+(c.culture||[]).length} фактов</small></span></button>`).join('')}</div></div>`;
+  }).join('');
+  $app.innerHTML = `<div class="stack" style="gap:18px"><div class="stack" style="gap:6px"><span class="label">Конспекты и справочник</span><h1>${onlyP!==null?esc(PER[onlyP].name):'Главы учебника'}</h1></div>
+    <label class="search" for="q"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Поиск: Уложение, Сперанский, 1653, Растрелли…" value="${esc(searchQ)}" autocomplete="off"></label>
+    <div id="results"></div>
+    ${onlyP!==null?'<button class="btn ghost back-link" type="button" data-nav="notes">← Все периоды</button>':''}
+    <div class="stack" id="chlist">${list}</div></div>`;
+  const inp = document.getElementById('q');
+  const run = () => { searchQ = inp.value; const r = document.getElementById('results'); const cl = document.getElementById('chlist');
+    const q = norm(searchQ); if (q.length<2){ r.innerHTML=''; cl.hidden=false; return; } cl.hidden = true;
+    const hits = [];
+    CARDS.forEach(c => { if (c.kind==='ruler') return; const d = c.d; const hay = norm([c.title, d.date, d.desc, d.role, d.def, d.author, (d.facts||[]).join(' ')].join(' ')); if (hay.includes(q)) hits.push(c); });
+    const uniq = []; const s = new Set(); hits.forEach(h=>{ const k=h.kind+norm(h.title); if(!s.has(k)){ s.add(k); uniq.push(h); } });
+    r.innerHTML = uniq.length ? `<p class="note">Найдено: ${uniq.length}</p><div class="items">${uniq.slice(0,80).map(itemRow).join('')}</div>` : '<p class="empty">Ничего не найдено. Попробуйте другое слово или год.</p>';
+  };
+  inp.oninput = run; if (searchQ) run();
+}
+function itemRow(c){
+  const d = c.d; const r = RUL[d.ruler];
+  const sub = c.kind==='event' ? `${esc(d.desc)}${r?` <span class="muted">(${esc(r.name)})</span>`:''}` : c.kind==='person' ? esc(d.role) : c.kind==='culture' ? `${d.author?esc(d.author)+'. ':''}${esc(d.desc)}` : esc(d.def);
+  return `<div class="item"><div class="h"><span class="tag"><span class="sw" style="background:${chColor(c.ch)}"></span>${esc(c.kind==='culture'?d.kind:CATL[c.cat])} · гл. ${c.ch}</span></div><div class="h"><b>${esc(c.title)}</b>${d.date?`<span class="dt">${esc(d.date)}</span>`:''}</div><div class="x">${sub}</div></div>`;
+}
+function renderChapter(ch){
+  const n = ch.chapter;
+  const st = chapterStats(n);
+  const evs = (ch.events||[]).slice().sort((a,b)=>(a.year-b.year)||((a.month||0)-(b.month||0)));
+  const sec = (title, count, inner, open) => `<details class="sec" ${open?'open':''}><summary><h3>${title}</h3><span class="c">${count}</span></summary>${inner}</details>`;
+  const evRows = list => `<div class="evlist" style="margin-bottom:12px">${list.map(e=>{ const r=RUL[e.ruler]; return `<div><span class="dt">${esc(e.date)}</span><span><b style="font-weight:600">${esc(e.title)}</b>${r?` <span class="muted" style="font-size:12.5px">· ${esc(r.name)}</span>`:''}<br><span class="muted" style="font-size:13.5px">${esc(e.desc)}</span></span></div>`; }).join('')}</div>`;
+  const internal = evs.filter(e=>e.type==='internal'), foreign = evs.filter(e=>e.type==='foreign');
+  const rulersHere = [...new Set(evs.map(e=>e.ruler))].filter(id=>RUL[id]).map(id=>RUL[id]).sort((a,b)=>a.idx-b.idx);
+  $app.innerHTML = `<div class="stack" style="gap:16px">
+    <button class="btn ghost back-link" type="button" data-nav="notes">← Все главы</button>
+    <div class="stack" style="gap:6px"><span class="tag"><span class="sw" style="background:${pc(ch.period)}"></span>${esc(PER[ch.period].name)} · глава ${n}</span><h1>${esc(ch.title)}</h1></div>
+    <div class="row"><button class="btn primary" type="button" id="chCards">Карточки главы · ${st.total}</button><button class="btn" type="button" data-nav="test" data-arg="ch${n}">Тест по главе</button></div>
+    <div class="bar"><i style="width:${st.total?st.learned/st.total*100:0}%;background:${pc(ch.period)}"></i></div>
+    <p class="note">Выучено ${st.learned} из ${st.total} карточек главы.</p>
+    <section class="summary"><span class="label">Конспект</span>${(ch.summary||[]).map(p=>`<p>${md(p)}</p>`).join('')}</section>
+    <div>
+    ${rulersHere.length?sec('Правители', rulersHere.length, `<div class="evlist" style="margin-bottom:12px">${rulersHere.map(r=>`<div><span class="dt">${esc(r.years)}</span><span><b style="font-weight:600">${esc(r.name)}</b>${(ch.ruler_notes||{})[r.id]?`<br><span class="muted" style="font-size:13.5px">${esc(ch.ruler_notes[r.id])}</span>`:''}</span></div>`).join('')}</div>`):''}
+    ${internal.length?sec('Внутренняя политика', internal.length, evRows(internal)):''}
+    ${foreign.length?sec('Внешняя политика', foreign.length, evRows(foreign)):''}
+    ${(ch.people||[]).length?sec('Персоны', ch.people.length, `<div class="items">${ch.people.map(p=>`<div class="item"><div class="h"><b>${esc(p.name)}</b></div><div class="x">${esc(p.role)}${(p.facts||[]).length?'. '+esc(p.facts.join('; '))+'.':''}</div></div>`).join('')}</div>`):''}
+    ${(ch.culture||[]).length?sec('Культура', ch.culture.length, `<div class="items">${ch.culture.slice().sort((a,b)=>(a.year||0)-(b.year||0)).map(c=>`<div class="item"><div class="h"><b>${esc(c.title)}</b><span class="dt">${esc(c.date||'')}</span></div><div class="x">${c.author?'<b style="font-weight:500">'+esc(c.author)+'.</b> ':''}${esc(c.desc)}${c.linked?' <span class="muted">Связано с: '+esc(c.linked)+'.</span>':''}</div></div>`).join('')}</div>`):''}
+    ${(ch.terms||[]).length?sec('Понятия', ch.terms.length, `<div class="items">${ch.terms.map(t=>`<div class="item"><div class="h"><b>${esc(t.term)}</b>${t.date?`<span class="dt">${esc(t.date)}</span>`:''}</div><div class="x">${esc(t.def)}</div></div>`).join('')}</div>`):''}
+    </div>
+    <div class="row">${n>1?`<button class="btn" type="button" data-nav="notes" data-arg="${n-1}">← Гл. ${n-1}</button>`:''}${n<22?`<button class="btn" type="button" data-nav="notes" data-arg="${n+1}" style="margin-left:auto">Гл. ${n+1} →</button>`:''}</div>
+  </div>`;
+  document.getElementById('chCards').onclick = () => { S.scope = [n]; S.cats = CATS.map(c=>c.id); save(); session = buildSession(); nav('cards'); };
+}
+
+/* ---------- render ---------- */
+function render(){
+  renderNav();
+  if (view==='home') renderHome();
+  else if (view==='cards') renderCards();
+  else if (view==='test'){ if (viewArg){ test = null; } renderTest(); }
+  else if (view==='rulers') renderRulers();
+  else if (view==='notes') renderNotes();
+}
+render();
+})();
+</script>
+
+</body>
+</html>
