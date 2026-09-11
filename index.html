@@ -285,6 +285,7 @@ details.sec[open] > summary::after{content:"–"}
 <nav class="tabbar" id="tabbar" aria-label="Разделы"></nav>
 
 <script src="data.js"></script>
+<script src="core.js"></script>
 <script>
 (function(){
 "use strict";
@@ -302,7 +303,7 @@ const LET = ['a','b','c','d'];
 
 /* ---------- store (per-browser) ---------- */
 const KEY = 'hronograf.v1';
-let S = { box:{}, seen:{}, wrong:[], tests:[], scope:null, cats:null, dir:'fwd', size:20 };
+let S = { box:{}, seen:{}, wrong:[], tests:[], scope:null, cats:null, dir:'fwd', size:20, core:0 };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 
@@ -356,10 +357,26 @@ D.rulers.forEach(r => {
   CARDS.push({key:'r:'+r.id, kind:'ruler', cat:'rulers', ch:Math.min(...chs), chs, title:r.name, d:RUL[r.id]});
 });
 CARDS.forEach(c=>CARD[c.key]=c);
+
+// ядро: карточки, отобранные по спросу банка вопросов (core.js)
+const HC = window.HCORE || null;
+const CORE = {
+  150: new Set(HC && HC.core150 ? HC.core150.keys : []),
+  300: new Set(HC && HC.core300 ? HC.core300.keys : [])
+};
+const CORE_COV = {150: HC && HC.core150 ? HC.core150.coverage : 0, 300: HC && HC.core300 ? HC.core300.coverage : 0};
+const hasCore = CORE[300].size > 0;
+if (!hasCore) S.core = 0;
+const coreSet = () => (S.core && CORE[S.core] && CORE[S.core].size) ? CORE[S.core] : null;
+// сколько карточек даёт уровень k, если взять все главы и все категории
+function coreSize(k){ const was = S.core; S.core = k; const n = deckFor(ALL_CH, CATS.map(c=>c.id)).length; S.core = was; return n; }
+
 const inScope = (c, scope) => c.chs ? c.chs.some(x=>scope.includes(x)) : scope.includes(c.ch);
 function deckFor(scope, cats){
+  const cs = coreSet();
   const seen = new Set(); const out = [];
   CARDS.forEach(c => {
+    if (cs && !cs.has(c.key)) return;
     if (!cats.includes(c.cat) || !inScope(c, scope)) return;
     const k = c.kind+'|'+norm(c.title);
     if (seen.has(k)) return; seen.add(k); out.push(c);
@@ -392,9 +409,18 @@ function renderNav(){
   document.getElementById('tabbar').innerHTML = VIEWS.map(v=>`<button type="button" data-nav="${v.id}" ${view===v.id?'aria-current="page"':''}>${ICONS[v.id]}<span>${v.label}</span></button>`).join('');
 }
 document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go-core]');
+  if (g){ e.preventDefault(); startCore(+g.dataset.goCore); return; }
   const b = e.target.closest('[data-nav]');
   if (b){ e.preventDefault(); const a = b.dataset.arg; nav(b.dataset.nav, a!==undefined ? (isNaN(+a)? a : +a) : null); }
 });
+// открыть карточки ядра сразу: с главной, из «72 часов» или по ссылке #core300
+function startCore(k){
+  if (!hasCore) return;
+  S.core = k; S.scope = ALL_CH.slice(); S.cats = CATS.map(c=>c.id); save();
+  session = buildSession();
+  view = 'cards'; viewArg = null; render(); window.scrollTo({top:0});
+}
 document.getElementById('brand').onclick = () => nav('home');
 
 /* ---------- Claude explain (optional) ---------- */
@@ -487,6 +513,7 @@ function bindScope(root, after){
 /* ---------- HOME ---------- */
 function renderHome(){
   const deck = deckFor(ALL_CH, CATS.map(c=>c.id));
+  const deck0 = coreSize(0);
   const L = deck.filter(learned).length;
   const qCount = CHS.reduce((s,c)=>s+(c.mcq||[]).length+(c.sequences||[]).length,0);
   const lastTest = S.tests[S.tests.length-1];
@@ -504,25 +531,26 @@ function renderHome(){
     <div class="stack" style="gap:10px">
       <span class="label">«История России» · учебник под ред. Ю. А. Петрова, 2024</span>
       <h1>Двенадцать веков в карточках и вопросах</h1>
-      <p class="muted" style="max-width:62ch">${deck.length} карточек и ${qCount} вопросов по 22 главам. Правители, персоны, реформы, войны и договоры, памятники культуры. Тесты составлены в формате экзамена: четыре варианта ответа или хронологическая последовательность.</p>
+      <p class="muted" style="max-width:62ch">${deck0} карточек и ${qCount} вопросов по 22 главам. Правители, персоны, реформы, войны и договоры, памятники культуры. Тесты составлены в формате экзамена: четыре варианта ответа или хронологическая последовательность.</p>
     </div>
     ${periodRibbon()}
     <div class="stats">
-      <div><span class="v">${L}<span class="muted" style="font-size:14px">/${deck.length}</span></span><span class="k">карточек выучено</span></div>
+      <div><span class="v">${L}<span class="muted" style="font-size:14px">/${deck.length}</span></span><span class="k">карточек выучено${S.core?' в ядре':''}</span></div>
       <div><span class="v">${S.wrong.length}</span><span class="k">${plural(S.wrong.length,'вопрос','вопроса','вопросов')} в разборе ошибок</span></div>
       <div><span class="v">${lastTest? Math.round(lastTest.score/lastTest.n*100)+'%' : '–'}</span><span class="k">${lastTest? 'последний тест' : 'тестов ещё не было'}</span></div>
     </div>
     <div class="actions">
-      <a class="action lead" href="exam.html" style="text-decoration:none"><span class="t">72 часа до экзамена</span><span class="d">Формат очного теста, план на три дня, ядро из 300 карточек, термины курса и ключ к варианту ВШЭ.</span></a>
+      ${hasCore?`<button class="action lead" type="button" data-go-core="300"><span class="t">Учить ядро · ${coreSize(300)} ${plural(coreSize(300),'карточка','карточки','карточек')}</span><span class="d">Отобраны так, чтобы закрыть ${CORE_COV[300]} % банка вопросов. Нажмите – и сразу начнётся сессия.</span></button>`:''}
+      <a class="action" href="exam.html" style="text-decoration:none"><span class="t">72 часа до экзамена</span><span class="d">Формат очного теста, план на три дня, термины курса и ключ к варианту ВШЭ.</span></a>
       <a class="action" href="minimum.html" style="text-decoration:none"><span class="t">Прочитать всё подряд</span><span class="d">Конспекты 22 глав одним текстом, лента правителей и 200 ключевых дат. Начните отсюда, если готовитесь с нуля.</span></a>
-      <button class="action" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Интервальное повторение: то, что не помните, вернётся чаще.</span></button>
+      <button class="action" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Вся колода или ядро, свои главы и категории.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="exam"><span class="t">Тест как на экзамене</span><span class="d">44 задания: 32 с выбором ответа и 12 на хронологию, 60 минут.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="past"><span class="t">Вариант 26.06.26</span><span class="d">Реальные вопросы прошлого экзамена, 14 штук.</span></button>
       <button class="action" type="button" data-nav="rulers"><span class="t">Лента правителей</span><span class="d">От Рюрика до наших дней: кто правил и что при нём произошло.</span></button>
     </div>
     <div class="panel stack" style="gap:8px">
       <span class="label">Если начинаете с нуля</span>
-      <p style="font-size:14.5px"><b>Если времени мало</b>, не начинайте с карточек — их 2 061, и больше половины приходится на персоны, понятия и культуру. Сначала <a href="minimum.html">прочитайте всё подряд</a>: лента правителей даёт каркас, на который ложатся даты. Потом прогоните 200 ключевых дат, и только затем — карточки и тесты.</p>
+      <p style="font-size:14.5px"><b>Если до экзамена дни, а не недели</b>, не беритесь за всю колоду — в ней ${deck0} ${plural(deck0,'карточка','карточки','карточек')}, и больше половины ни разу не встречается в банке вопросов. Учите <a href="#" data-go-core="300">ядро</a>: ${coreSize(300)} карточек, отобранных по тому, что банк спрашивает чаще всего. Каркас под них — <a href="minimum.html">лента правителей и 200 дат</a>.</p>
       <p style="font-size:14.5px"><b>Если время есть</b>, идите по главам в порядке учебника: <b>1)</b> конспект главы, <b>2)</b> карточки главы, пока большинство не станет «помню», <b>3)</b> тест по главе. Раз в несколько дней — смешанный тест по всем пройденным главам: на экзамене эпохи перемешаны.</p>
     </div>
     ${chaptersByPeriod}
@@ -605,6 +633,28 @@ function cardBack(c){
   }
   return `${cardShelf(c)}<div class="back" style="margin-top:14px">${h}</div>`;
 }
+const CORE_NOTE = {
+  0: 'Вся колода целиком. Больше половины карточек ни разу не встречается в банке вопросов – если до экзамена дни, а не недели, берите ядро.',
+  300: 'Ядро: карточки отобраны так, чтобы вместе закрыть как можно больше вопросов банка. Правители в ядро не входят – их всего 66, и для них есть <a href="#" data-nav="rulers">лента правителей</a>.',
+  150: 'Минимум на один вечер: самые востребованные карточки ядра. Если времени совсем нет, учите их, а сверху – ленту правителей и даты.'
+};
+function corePicker(){
+  if (!hasCore) return '';
+  const opt = (k, label) => `<button class="chip" type="button" aria-pressed="${S.core===k}" data-core="${k}">${label} <span class="mono muted">${coreSize(k)}</span></button>`;
+  return `<div class="panel stack" style="gap:10px">
+    <span class="label">Объём</span>
+    <div class="row">${opt(150,'Минимум')}${opt(300,'Ядро')}${opt(0,'Всё')}</div>
+    ${S.core?`<div class="row" style="gap:8px"><span class="tag" style="color:var(--accent)">покрывает ${CORE_COV[S.core]} % банка вопросов</span></div>`:''}
+    <p class="note" style="margin:0">${CORE_NOTE[S.core]}</p>
+  </div>`;
+}
+function bindCore(after){
+  $app.querySelectorAll('[data-core]').forEach(b => b.onclick = () => {
+    const k = +b.dataset.core;
+    if (S.core === k) return;
+    S.core = k; save(); after();
+  });
+}
 function renderCards(){
   if (!session){
     const deck = deckFor(S.scope, S.cats);
@@ -612,6 +662,7 @@ function renderCards(){
     $app.innerHTML = `<div class="stack" style="gap:18px">
       <div class="stack" style="gap:6px"><span class="label">Карточки</span><h1>Что будем учить?</h1>
       <p class="muted">Выберите главы и категории. Карточки, которые вы отметите «не помню», вернутся в этой же сессии.</p></div>
+      ${corePicker()}
       ${scopePicker({cats:true})}
       <div class="panel stack" style="gap:12px">
         <div class="row" style="justify-content:space-between"><span>В выборке <b class="mono">${deck.length}</b> ${plural(deck.length,'карточка','карточки','карточек')}</span><span class="mono muted" style="font-size:13px">выучено ${L}</span></div>
@@ -627,6 +678,7 @@ function renderCards(){
       <p class="note">Прогресс хранится в этом браузере. «Выучено» – карточка трижды подряд отмечена как «помню».</p>
     </div>`;
     bindScope($app, renderCards);
+    bindCore(renderCards);
     $app.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>{ S.dir=b.dataset.dir; save(); renderCards(); });
     $app.querySelectorAll('[data-size]').forEach(b=>b.onclick=()=>{ S.size=+b.dataset.size; save(); renderCards(); });
     document.getElementById('start').onclick = () => { session = buildSession(); renderCards(); };
@@ -1076,7 +1128,10 @@ function render(){
   else if (view==='rulers') renderRulers();
   else if (view==='notes') renderNotes();
 }
-render();
+const coreHash = () => { const m = /^#core(150|300)$/.exec(location.hash||''); return m ? +m[1] : 0; };
+window.addEventListener('hashchange', () => { const k = coreHash(); if (k) startCore(k); });
+const k0 = coreHash();
+if (hasCore && k0) startCore(k0); else render();
 })();
 </script>
 
