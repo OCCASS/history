@@ -145,6 +145,20 @@ main{padding-block:22px 24px}
 .chrow .pr{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:64px}
 .chrow .pr .bar{width:64px;height:4px}
 .chrow .pr small{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+.stk{display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;background:none;border:0;text-align:left;width:100%}
+.stk + .stk{border-top:1px solid var(--line)}
+.stk:hover{background:var(--surface-2)}
+.stk .no{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;border:1px solid var(--line-strong);color:var(--muted)}
+.stk.seen .no{border-color:var(--accent);color:var(--accent)}
+.stk.now .no{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.stk.done .no{background:var(--good);border-color:var(--good);color:var(--paper)}
+.stk .ti{display:block;font-size:14.5px;font-weight:500;line-height:1.3}
+.stk .sub{display:block;font-family:var(--f-mono);font-size:11px;color:var(--muted);line-height:1.4;margin-top:3px}
+.stk .pr{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:64px}
+.stk .pr .bar{width:64px;height:4px}
+.stk .pr small{font-family:var(--f-mono);font-size:10.5px;color:var(--muted)}
+@media (max-width:560px){.stk{grid-template-columns:28px minmax(0,1fr) auto;gap:10px;padding:11px 12px}
+  .stk .pr{min-width:46px}.stk .pr .bar{width:46px}}
 
 /* scope picker */
 .scope{display:flex;flex-direction:column;gap:10px}
@@ -303,7 +317,7 @@ const LET = ['a','b','c','d'];
 
 /* ---------- store (per-browser) ---------- */
 const KEY = 'hronograf.v1';
-let S = { box:{}, seen:{}, wrong:[], tests:[], scope:null, cats:null, dir:'fwd', size:20, core:0 };
+let S = { box:{}, seen:{}, wrong:[], tests:[], scope:null, cats:null, dir:'fwd', size:20, core:0, mode:'blocks' };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 
@@ -368,6 +382,31 @@ const CORE_COV = {150: HC && HC.core150 ? HC.core150.coverage : 0, 300: HC && HC
 const hasCore = CORE[300].size > 0;
 if (!hasCore) S.core = 0;
 const coreSet = () => (S.core && CORE[S.core] && CORE[S.core].size) ? CORE[S.core] : null;
+
+// стопки: то же ядро, разложенное на тематические порции по 13–28 карточек (core.js)
+const BLOCKS = (HC && HC.blocks ? HC.blocks : [])
+  .map(b => Object.assign({}, b, {cards: b.keys.map(k => CARD[k]).filter(Boolean)}))
+  .filter(b => b.cards.length);
+const hasBlocks = BLOCKS.length > 0;
+const CORE_TOTAL = BLOCKS.reduce((s,b)=>s+b.cards.length, 0);
+const blockByN = n => BLOCKS.find(b => b.n === n) || null;
+if (!hasBlocks) S.mode = 'free';
+function blockStats(b){
+  let l = 0, mid = 0, seen = 0;
+  b.cards.forEach(c => { const x = S.box[c.key] || 0; if (x >= 3) l++; else if (x > 0) mid++; if (S.seen[c.key]) seen++; });
+  return {total:b.cards.length, learned:l, mid, seen, left:b.cards.length - l};
+}
+// полоса прогресса стопки: выученное – цветом, начатое – бледной заливкой
+function blockBar(b, st){
+  const done = st.total ? st.learned/st.total*100 : 0, started = st.total ? (st.learned+st.mid)/st.total*100 : 0;
+  return `<div class="bar" style="background:linear-gradient(to right,color-mix(in srgb,${pc(b.per)} 30%,var(--surface-2)) 0 ${started}%,var(--surface-2) ${started}% 100%)"><i style="width:${done}%;background:${pc(b.per)}"></i></div>`;
+}
+// текущая стопка: первая непройденная, иначе первая невыученная, иначе последняя
+function currentBlock(){
+  return BLOCKS.find(b => blockStats(b).seen < b.cards.length)
+      || BLOCKS.find(b => blockStats(b).learned < b.cards.length)
+      || BLOCKS[BLOCKS.length-1];
+}
 // сколько карточек даёт уровень k, если взять все главы и все категории
 function coreSize(k){ const was = S.core; S.core = k; const n = deckFor(ALL_CH, CATS.map(c=>c.id)).length; S.core = was; return n; }
 
@@ -411,15 +450,27 @@ function renderNav(){
 document.addEventListener('click', e => {
   const g = e.target.closest('[data-go-core]');
   if (g){ e.preventDefault(); startCore(+g.dataset.goCore); return; }
+  const st = e.target.closest('[data-stack]');
+  if (st){ e.preventDefault(); openStacks(+st.dataset.stack); return; }
+  const md = e.target.closest('[data-mode]');
+  if (md){ e.preventDefault(); S.mode = md.dataset.mode; save(); openBlock = null; session = null; view = 'cards'; viewArg = null; render(); window.scrollTo({top:0}); return; }
   const b = e.target.closest('[data-nav]');
   if (b){ e.preventDefault(); const a = b.dataset.arg; nav(b.dataset.nav, a!==undefined ? (isNaN(+a)? a : +a) : null); }
 });
-// открыть карточки ядра сразу: с главной, из «72 часов» или по ссылке #core300
+// открыть ядро: с главной, из «72 часов» или по ссылке #core300 / #core150
 function startCore(k){
+  if (hasBlocks && k === 300) return openStacks();
   if (!hasCore) return;
-  S.core = k; S.scope = ALL_CH.slice(); S.cats = CATS.map(c=>c.id); save();
+  S.core = k; S.mode = 'free'; S.scope = ALL_CH.slice(); S.cats = CATS.map(c=>c.id); save();
   session = buildSession();
   view = 'cards'; viewArg = null; render(); window.scrollTo({top:0});
+}
+// открыть путь по стопкам ядра (без аргумента – список, с номером – саму стопку)
+function openStacks(n){
+  if (!hasBlocks) return;
+  S.mode = 'blocks'; save();
+  openBlock = n ? blockByN(n) : null;
+  session = null; view = 'cards'; viewArg = null; render(); window.scrollTo({top:0});
 }
 document.getElementById('brand').onclick = () => nav('home');
 
@@ -514,6 +565,8 @@ function bindScope(root, after){
 function renderHome(){
   const deck = deckFor(ALL_CH, CATS.map(c=>c.id));
   const deck0 = coreSize(0);
+  const curB = hasBlocks ? currentBlock() : null;
+  const coreL = hasBlocks ? BLOCKS.reduce((s,b)=>s+b.cards.filter(learned).length, 0) : 0;
   const L = deck.filter(learned).length;
   const qCount = CHS.reduce((s,c)=>s+(c.mcq||[]).length+(c.sequences||[]).length,0);
   const lastTest = S.tests[S.tests.length-1];
@@ -540,17 +593,18 @@ function renderHome(){
       <div><span class="v">${lastTest? Math.round(lastTest.score/lastTest.n*100)+'%' : '–'}</span><span class="k">${lastTest? 'последний тест' : 'тестов ещё не было'}</span></div>
     </div>
     <div class="actions">
-      ${hasCore?`<button class="action lead" type="button" data-go-core="300"><span class="t">Учить ядро · ${coreSize(300)} ${plural(coreSize(300),'карточка','карточки','карточек')}</span><span class="d">Отобраны так, чтобы закрыть ${CORE_COV[300]} % банка вопросов. Нажмите – и сразу начнётся сессия.</span></button>`:''}
+      ${hasBlocks?`<button class="action lead" type="button" data-go-core="300"><span class="t">Ядро ${BLOCKS.length} стопками</span><span class="d">${CORE_TOTAL} самых спрашиваемых карточек, разложенных по сюжетам: ${coreL?`выучено ${coreL} из ${CORE_TOTAL}, сейчас стопка ${curB.n} – «${esc(curB.title)}»`:`начните со стопки 1 – «${esc(BLOCKS[0].title)}», ${BLOCKS[0].cards.length} карточек`}.</span></button>`
+      :hasCore?`<button class="action lead" type="button" data-go-core="300"><span class="t">Учить ядро · ${coreSize(300)} ${plural(coreSize(300),'карточка','карточки','карточек')}</span><span class="d">Отобраны так, чтобы закрыть ${CORE_COV[300]} % банка вопросов. Нажмите – и сразу начнётся сессия.</span></button>`:''}
       <a class="action" href="exam.html" style="text-decoration:none"><span class="t">72 часа до экзамена</span><span class="d">Формат очного теста, план на три дня, термины курса и ключ к варианту ВШЭ.</span></a>
       <a class="action" href="minimum.html" style="text-decoration:none"><span class="t">Прочитать всё подряд</span><span class="d">Конспекты 22 глав одним текстом, лента правителей и 200 ключевых дат. Начните отсюда, если готовитесь с нуля.</span></a>
-      <button class="action" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Вся колода или ядро, свои главы и категории.</span></button>
+      <button class="action" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Стопки ядра или своя выборка: любые главы и категории.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="exam"><span class="t">Тест как на экзамене</span><span class="d">44 задания: 32 с выбором ответа и 12 на хронологию, 60 минут.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="past"><span class="t">Вариант 26.06.26</span><span class="d">Реальные вопросы прошлого экзамена, 14 штук.</span></button>
       <button class="action" type="button" data-nav="rulers"><span class="t">Лента правителей</span><span class="d">От Рюрика до наших дней: кто правил и что при нём произошло.</span></button>
     </div>
     <div class="panel stack" style="gap:8px">
       <span class="label">Если начинаете с нуля</span>
-      <p style="font-size:14.5px"><b>Если до экзамена дни, а не недели</b>, не беритесь за всю колоду — в ней ${deck0} ${plural(deck0,'карточка','карточки','карточек')}, и больше половины ни разу не встречается в банке вопросов. Учите <a href="#" data-go-core="300">ядро</a>: ${coreSize(300)} карточек, отобранных по тому, что банк спрашивает чаще всего. Каркас под них — <a href="minimum.html">лента правителей и 200 дат</a>.</p>
+      <p style="font-size:14.5px"><b>Если до экзамена дни, а не недели</b>, не беритесь за всю колоду — в ней ${deck0} ${plural(deck0,'карточка','карточки','карточек')}, и больше половины ни разу не встречается в банке вопросов. Учите <a href="#" data-go-core="300">ядро</a> — ${CORE_TOTAL} карточек, отобранных по тому, что банк спрашивает чаще всего.${hasBlocks?` Оно разложено на ${BLOCKS.length} стопок по 13–28 карточек: за раз берётся один сюжет, а не триста карточек подряд.`:''} Каркас под них — <a href="minimum.html">лента правителей и 200 дат</a>.</p>
       <p style="font-size:14.5px"><b>Если время есть</b>, идите по главам в порядке учебника: <b>1)</b> конспект главы, <b>2)</b> карточки главы, пока большинство не станет «помню», <b>3)</b> тест по главе. Раз в несколько дней — смешанный тест по всем пройденным главам: на экзамене эпохи перемешаны.</p>
     </div>
     ${chaptersByPeriod}
@@ -559,6 +613,7 @@ function renderHome(){
 
 /* ---------- CARDS ---------- */
 let session = null;
+let openBlock = null;
 function buildSession(){
   const deck = deckFor(S.scope, S.cats);
   if (!deck.length) return null;
@@ -572,6 +627,90 @@ function buildSession(){
   const size = S.size === 0 ? scored.length : Math.min(S.size, scored.length);
   const q = scored.slice(0,size).map(x=>x.c);
   return {queue: shuffle(q.slice(0, Math.min(q.length, size))).sort((a,b)=>(S.box[a.key]||0)-(S.box[b.key]||0)), done:0, total:q.length, flipped:false, tally:{no:0,mid:0,yes:0}};
+}
+// сессия по стопке: порядок карточек – сюжетный (события по годам, затем люди, понятия, культура)
+function buildBlockSession(b, mode){
+  let cards = b.cards;
+  if (mode === 'rest') cards = cards.filter(c => !learned(c));
+  else if (mode === 'min') cards = cards.filter(c => CORE[150].has(c.key));
+  if (!cards.length) cards = b.cards;
+  return {queue: cards.slice(), done:0, total:cards.length, flipped:false, tally:{no:0,mid:0,yes:0}, block:b.n};
+}
+const modeChips = () => !hasBlocks ? '' : `<div class="row">
+  <button class="chip" type="button" aria-pressed="${S.mode==='blocks'}" data-mode="blocks">Ядро стопками</button>
+  <button class="chip" type="button" aria-pressed="${S.mode==='free'}" data-mode="free">Своя выборка</button></div>`;
+function stackRow(b, cur){
+  const st = blockStats(b);
+  const done = st.learned === st.total;
+  const cls = done ? 'done' : (cur && cur.n === b.n ? 'now' : (st.seen ? 'seen' : ''));
+  return `<button class="stk ${cls}" type="button" data-stack="${b.n}">
+    <span class="no">${done ? '✓' : b.n}</span>
+    <span><span class="ti">${esc(b.title)}</span><span class="sub">${st.total} карточек · ${esc(b.span)} · гл. ${b.chs.join(', ')}</span></span>
+    <span class="pr">${blockBar(b, st)}<small>${st.learned}/${st.total}</small></span>
+  </button>`;
+}
+function renderBlockList(){
+  const cur = currentBlock();
+  const curSt = blockStats(cur);
+  const L = BLOCKS.reduce((s,b)=>s+b.cards.filter(learned).length, 0);
+  const seen = BLOCKS.reduce((s,b)=>s+b.cards.filter(c=>S.seen[c.key]).length, 0);
+  const mid = BLOCKS.reduce((s,b)=>s+b.cards.filter(c=>{ const x = S.box[c.key]||0; return x > 0 && x < 3; }).length, 0);
+  const sizes = BLOCKS.map(b=>b.cards.length);
+  $app.innerHTML = `<div class="stack" style="gap:18px">
+    <div class="stack" style="gap:6px"><span class="label">Ядро курса · ${CORE_TOTAL} карточек</span>
+      <h1>${BLOCKS.length} стопок вместо одной колоды</h1>
+      <p class="muted">Стопка – это один связный сюжет: ${Math.min(...sizes)}–${Math.max(...sizes)} карточек из соседних глав, примерно на полчаса. Пройдите стопку, проверьте себя тестом по её главам – и только потом беритесь за следующую.</p></div>
+    ${modeChips()}
+    <div class="panel stack" style="gap:12px">
+      <div class="row" style="justify-content:space-between"><span>Выучено <b class="mono">${L}</b> из ${CORE_TOTAL}</span><span class="mono muted" style="font-size:13px">${mid?'в работе '+mid+' · ':''}показано ${seen}</span></div>
+      <div class="bar" style="background:linear-gradient(to right,var(--accent-soft) 0 ${(L+mid)/CORE_TOTAL*100}%,var(--surface-2) ${(L+mid)/CORE_TOTAL*100}% 100%)"><i style="width:${L/CORE_TOTAL*100}%"></i></div>
+      <button class="btn primary block" type="button" data-stack="${cur.n}">${curSt.seen ? 'Продолжить' : 'Начать'}: стопка ${cur.n} · ${esc(cur.title)}</button>
+    </div>
+    <div class="chlist">${BLOCKS.map(b=>stackRow(b, cur)).join('')}</div>
+    <p class="note">Внутри стопки карточки идут по сюжету: сначала события по годам, затем персоны, понятия и культура. Прогресс общий с остальным приложением: карточка становится выученной после трёх «помню».</p>
+  </div>`;
+}
+function renderBlockPage(b){
+  const st = blockStats(b);
+  const minN = b.cards.filter(c=>CORE[150].has(c.key)).length;
+  const prev = blockByN(b.n-1), next = blockByN(b.n+1);
+  const groups = [['event','События'],['person','Персоны'],['term','Понятия'],['culture','Культура']];
+  const list = groups.map(([k,label]) => {
+    const cs = b.cards.filter(c => c.kind === k);
+    if (!cs.length) return '';
+    return `<div class="section" style="gap:6px"><span class="label">${label} · ${cs.length}</span>
+      <div class="evlist">${cs.map(c=>`<div><span class="dt">${esc(c.kind==='person'?'':(c.d.date||''))}</span><span>${learned(c)?'<span style="color:var(--good)">✓</span> ':''}${esc(c.title)}${b.chs.length>1?`<span class="ty">гл. ${c.ch}</span>`:''}</span></div>`).join('')}</div></div>`;
+  }).join('');
+  $app.innerHTML = `<div class="stack" style="gap:16px">
+    <button class="btn ghost back-link" type="button" id="allStacks">← Все стопки</button>
+    <div class="stack" style="gap:6px">
+      <span class="tag"><span class="sw" style="background:${pc(b.per)}"></span>Стопка ${b.n} из ${BLOCKS.length} · ${esc(b.span)} · гл. ${b.chs.join(', ')}</span>
+      <h1>${esc(b.title)}</h1><p class="muted">${esc(b.sub)}</p></div>
+    <div class="panel stack" style="gap:12px">
+      <div class="row" style="justify-content:space-between"><span>В стопке <b class="mono">${st.total}</b> ${plural(st.total,'карточка','карточки','карточек')}</span><span class="mono muted" style="font-size:13px">выучено ${st.learned}${st.mid?' · в работе '+st.mid:''}</span></div>
+      ${blockBar(b, st)}
+      <button class="btn primary block" type="button" data-run="all">${st.seen ? (st.left ? 'Пройти стопку заново' : 'Повторить стопку') : 'Начать стопку'} · ${st.total}</button>
+      <div class="row">
+        ${st.seen && st.left ? `<button class="btn" type="button" data-run="rest">Только невыученные · ${st.left}</button>` : ''}
+        ${minN && minN < st.total ? `<button class="btn" type="button" data-run="min">Самое важное · ${minN}</button>` : ''}
+        <button class="btn" type="button" data-run="test">Тест по стопке</button>
+      </div>
+      <div class="stack" style="gap:6px"><span class="label">Сторона карточки</span><div class="row">
+        <button class="chip" type="button" aria-pressed="${S.dir==='fwd'}" data-sdir="fwd">Название → факты</button>
+        <button class="chip" type="button" aria-pressed="${S.dir==='rev'}" data-sdir="rev">Факты → название</button></div></div>
+      <p class="note" style="margin:0">${minN && minN < st.total ? `«Самое важное» – ${minN} ${plural(minN,'карточка','карточки','карточек')} стопки, входящие в сокращённое ядро на 150. ` : ''}Тест берёт 15 заданий банка по ${b.chs.length>1?'главам':'главе'} ${b.chs.join(', ')} – с выбором ответа и на хронологию.</p>
+    </div>
+    <details class="sec" open><summary><h3>Что внутри</h3><span class="c">${st.total}</span></summary>
+      <div class="stack" style="gap:14px;padding:10px 0 4px">${list}</div></details>
+    <div class="row">${prev?`<button class="btn" type="button" data-stack="${prev.n}">← Стопка ${prev.n}</button>`:''}${next?`<button class="btn" type="button" data-stack="${next.n}" style="margin-left:auto">Стопка ${next.n} →</button>`:''}</div>
+  </div>`;
+  document.getElementById('allStacks').onclick = () => { openBlock = null; renderCards(); window.scrollTo({top:0}); };
+  $app.querySelectorAll('[data-sdir]').forEach(x => x.onclick = () => { S.dir = x.dataset.sdir; save(); renderCards(); });
+  $app.querySelectorAll('[data-run]').forEach(x => x.onclick = () => {
+    const m = x.dataset.run;
+    if (m === 'test'){ if (startTest('mix', 15, b.chs)) nav('test'); return; }
+    session = buildBlockSession(b, m); renderCards(); window.scrollTo({top:0});
+  });
 }
 function cardShelf(c){
   const ch = CHN[c.ch];
@@ -656,12 +795,14 @@ function bindCore(after){
   });
 }
 function renderCards(){
+  if (!session && S.mode === 'blocks' && hasBlocks) return openBlock ? renderBlockPage(openBlock) : renderBlockList();
   if (!session){
     const deck = deckFor(S.scope, S.cats);
     const L = deck.filter(learned).length;
     $app.innerHTML = `<div class="stack" style="gap:18px">
       <div class="stack" style="gap:6px"><span class="label">Карточки</span><h1>Что будем учить?</h1>
       <p class="muted">Выберите главы и категории. Карточки, которые вы отметите «не помню», вернутся в этой же сессии.</p></div>
+      ${modeChips()}
       ${corePicker()}
       ${scopePicker({cats:true})}
       <div class="panel stack" style="gap:12px">
@@ -686,18 +827,39 @@ function renderCards(){
   }
   if (!session.queue.length){
     const t = session.tally;
-    $app.innerHTML = `<div class="stack" style="gap:18px"><span class="label">Сессия завершена</span><h1>${session.total} ${plural(session.total,'карточка','карточки','карточек')} пройдено</h1>
+    const bl = session.block ? blockByN(session.block) : null;
+    const st = bl ? blockStats(bl) : null;
+    const next = bl ? blockByN(bl.n+1) : null;
+    $app.innerHTML = `<div class="stack" style="gap:18px">
+      <span class="label">${bl ? `Стопка ${bl.n} из ${BLOCKS.length} · ${esc(bl.title)}` : 'Сессия завершена'}</span>
+      <h1>${session.total} ${plural(session.total,'карточка','карточки','карточек')} пройдено</h1>
       <div class="stats"><div><span class="v" style="color:var(--good)">${t.yes}</span><span class="k">помню</span></div><div><span class="v" style="color:var(--warn)">${t.mid}</span><span class="k">сомневаюсь</span></div><div><span class="v" style="color:var(--bad)">${t.no}</span><span class="k">не помню</span></div></div>
-      <div class="row"><button class="btn primary" type="button" id="again">Ещё сессия</button><button class="btn" type="button" id="setup">Изменить выборку</button><button class="btn" type="button" data-nav="test" data-arg="mix">Проверить себя тестом</button></div></div>`;
-    document.getElementById('again').onclick = () => { session = buildSession(); renderCards(); };
-    document.getElementById('setup').onclick = () => { session = null; renderCards(); };
+      ${bl?`<div class="panel stack" style="gap:10px">
+        <div class="row" style="justify-content:space-between"><span>Выучено в стопке <b class="mono">${st.learned}</b> из ${st.total}</span>${st.left?`<span class="mono muted" style="font-size:13px">${st.mid?'в работе '+st.mid:''}${st.mid&&st.total-st.learned-st.mid?' · ':''}${st.total-st.learned-st.mid?'новых '+(st.total-st.learned-st.mid):''}</span>`:`<span class="mono" style="font-size:13px;color:var(--good)">стопка выучена</span>`}</div>
+        ${blockBar(bl, st)}
+        <p class="note" style="margin:0">${st.left?`Карточка засчитывается как выученная после трёх «помню», так что стопку обычно проходят два-три раза. Между проходами полезно прогнать тест по ${bl.chs.length>1?'главам':'главе'} ${bl.chs.join(', ')}.`:`Стопка закрыта. Проверьте себя тестом по ${bl.chs.length>1?'главам':'главе'} ${bl.chs.join(', ')} и переходите к следующей.`}</p>
+      </div>`:''}
+      <div class="row">
+        ${bl?`<button class="btn primary" type="button" id="blockTest">Проверить себя тестом</button>`:`<button class="btn primary" type="button" id="again">Ещё сессия</button>`}
+        ${bl&&st.left?`<button class="btn" type="button" id="again">Повторить невыученные · ${st.left}</button>`:''}
+        ${bl&&next?`<button class="btn" type="button" data-stack="${next.n}">Стопка ${next.n} →</button>`:''}
+        <button class="btn" type="button" id="setup">${bl?'К списку стопок':'Изменить выборку'}</button>
+        ${bl?'':`<button class="btn" type="button" data-nav="test" data-arg="mix">Проверить себя тестом</button>`}
+      </div></div>`;
+    const ag = document.getElementById('again');
+    if (ag) ag.onclick = () => { session = bl ? buildBlockSession(bl, 'rest') : buildSession(); renderCards(); window.scrollTo({top:0}); };
+    document.getElementById('setup').onclick = () => { session = null; openBlock = null; renderCards(); window.scrollTo({top:0}); };
+    const bt = document.getElementById('blockTest');
+    if (bt) bt.onclick = () => { session = null; openBlock = bl; if (startTest('mix', 15, bl.chs)) nav('test'); else renderCards(); };
     return;
   }
   const c = session.queue[0];
   const b = S.box[c.key]||0;
   const pct = session.done/session.total*100;
+  const bl = session.block ? blockByN(session.block) : null;
   $app.innerHTML = `<div class="card-stage">
-    <div class="row" style="justify-content:space-between"><button class="btn ghost back-link" type="button" id="quit">← Выборка</button><span class="boxes" title="Уровень знания">${[0,1,2].map(i=>`<i class="${b>i?'on':''}"></i>`).join('')}</span></div>
+    <div class="row" style="justify-content:space-between"><button class="btn ghost back-link" type="button" id="quit">${bl?'← К стопке':'← Выборка'}</button><span class="boxes" title="Уровень знания">${[0,1,2].map(i=>`<i class="${b>i?'on':''}"></i>`).join('')}</span></div>
+    ${bl?`<span class="tag"><span class="sw" style="background:${pc(bl.per)}"></span>Стопка ${bl.n} из ${BLOCKS.length} · ${esc(bl.title)}</span>`:''}
     <div class="progress-line"><span>${session.done}/${session.total}</span><span class="bar"><i style="width:${pct}%"></i></span><span>осталось ${session.queue.length}</span></div>
     <article class="fc ${session.flipped?'flip':''}" id="fc" tabindex="0" style="--pc:${chColor(c.ch)}" aria-label="Карточка, нажмите чтобы перевернуть">${session.flipped ? cardBack(c) : cardFront(c, S.dir)}</article>
     ${session.flipped ? `<div class="rate">
@@ -710,7 +872,7 @@ function renderCards(){
   const flip = () => { if (!session.flipped){ session.flipped = true; renderCards(); } };
   document.getElementById('fc').onclick = e => { if (e.target.closest('a,button')) return; flip(); };
   const fb = document.getElementById('flip'); if (fb) fb.onclick = flip;
-  document.getElementById('quit').onclick = () => { session = null; renderCards(); };
+  document.getElementById('quit').onclick = () => { if (bl) openBlock = bl; session = null; renderCards(); window.scrollTo({top:0}); };
   $app.querySelectorAll('[data-rate]').forEach(x => x.onclick = () => rate(x.dataset.rate));
 }
 function rate(r){
