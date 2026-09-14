@@ -126,12 +126,31 @@ for s, task in enumerate(PAST['seq']):
 
 assert len(deck) == 40, 'в топе %d карточек, а не 40' % len(deck)
 
+# тест по топ-40 собирает хронологии из любых четырёх карточек – порядок должен однозначно следовать из дат:
+# карточки одного года различаются месяцем
+by_year = {}
+for k in deck:
+    y, m = deck[k]['sort']
+    by_year.setdefault(y, []).append(m)
+for y, ms in by_year.items():
+    assert len(ms) == 1 or (all(ms) and len(set(ms)) == len(ms)), \
+        '%d год: у карточек нет месяцев или они совпадают – порядок неоднозначен' % y
+
+def card_entry(k):
+    y, m = deck[k]['sort']
+    e = {'key': k, 'd': deck[k]['d'], 'y': y}
+    if m:
+        e['m'] = m
+    e['ex'] = deck[k]['ex']
+    return e
+
 keys = sorted(deck, key=lambda k: (deck[k]['sort'], CARDS[k]['label']))
 top = {
     'note': 'Топ-40: все факты, нужные для 14 заданий варианта 26.06.26 (HDATA.pastExam), '
-            'по карточке на пункт, в порядке времени. ex – задания варианта: n – номер как в тесте '
-            '(сначала %d вопросов, затем хронологии), i – пункт хронологии.' % M,
-    'cards': [{'key': k, 'd': deck[k]['d'], 'ex': deck[k]['ex']} for k in keys],
+            'по карточке на пункт, в порядке времени. d – дата для списка, y и m – год и месяц для порядка '
+            'в хронологиях; ex – задания варианта: n – номер как в тесте (сначала %d вопросов, затем '
+            'хронологии), i – пункт хронологии.' % M,
+    'cards': [card_entry(k) for k in keys],
 }
 
 if '--preview' in sys.argv:
