@@ -193,6 +193,9 @@ main{padding-block:22px 24px}
 .fc .look{font-size:13.5px;background:var(--surface-2);border-radius:6px;padding:8px 10px;line-height:1.45}
 .fc img,.q-img{max-width:100%;height:auto;border-radius:4px;border:1px solid var(--line);display:block}
 .fc .front-img{max-height:260px;width:auto;margin:6px auto 0}
+.fc .exam-hook{display:flex;flex-direction:column;gap:8px;border-top:1px dashed var(--line-strong);padding-top:12px;font-size:14px;line-height:1.45}
+.fc .exam-hook img{max-height:200px;width:auto;align-self:flex-start}
+.fc .exam-hook .chain .me,.fc .exam-hook .chain .me .y{color:var(--pc,var(--accent));font-weight:600}
 .rate{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .rate .btn{flex-direction:column;gap:0;line-height:1.2;padding:8px 6px}
 .rate .btn small{font-size:11px;font-weight:400;color:var(--muted)}
@@ -317,7 +320,7 @@ const LET = ['a','b','c','d'];
 
 /* ---------- store (per-browser) ---------- */
 const KEY = 'hronograf.v1';
-let S = { box:{}, seen:{}, wrong:[], tests:[], scope:null, cats:null, dir:'fwd', size:20, core:0, mode:'blocks' };
+let S = { box:{}, seen:{}, wrong:[], tests:[], scope:null, cats:null, dir:'fwd', size:20, core:0, mode:'top' };
 try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch(e) {}
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} }
 
@@ -390,17 +393,27 @@ const BLOCKS = (HC && HC.blocks ? HC.blocks : [])
 const hasBlocks = BLOCKS.length > 0;
 const CORE_TOTAL = BLOCKS.reduce((s,b)=>s+b.cards.length, 0);
 const blockByN = n => BLOCKS.find(b => b.n === n) || null;
-if (!hasBlocks) S.mode = 'free';
+if (!hasBlocks && S.mode === 'blocks') S.mode = 'free';
+
+// топ-40: карточки, которыми решаются все 14 заданий прошлого варианта 26.06.26 (core.js, tools/gen-top40.py)
+const TOP = (HC && HC.top40 ? HC.top40.cards : []).filter(x => CARD[x.key]);
+const TOP_CARDS = TOP.map(x => CARD[x.key]);
+const TOP_BY_KEY = Object.fromEntries(TOP.map(x => [x.key, x]));
+const hasTop = TOP_CARDS.length > 0 && !!D.pastExam;
+const PAST_N = D.pastExam ? D.pastExam.mcq.length + D.pastExam.seq.length : 0;
+if (!hasTop && S.mode === 'top') S.mode = hasBlocks ? 'blocks' : 'free';
+
 function blockStats(b){
   let l = 0, mid = 0, seen = 0;
   b.cards.forEach(c => { const x = S.box[c.key] || 0; if (x >= 3) l++; else if (x > 0) mid++; if (S.seen[c.key]) seen++; });
   return {total:b.cards.length, learned:l, mid, seen, left:b.cards.length - l};
 }
-// полоса прогресса стопки: выученное – цветом, начатое – бледной заливкой
-function blockBar(b, st){
+// полоса прогресса: выученное – цветом, начатое – бледной заливкой
+function progBar(color, st){
   const done = st.total ? st.learned/st.total*100 : 0, started = st.total ? (st.learned+st.mid)/st.total*100 : 0;
-  return `<div class="bar" style="background:linear-gradient(to right,color-mix(in srgb,${pc(b.per)} 30%,var(--surface-2)) 0 ${started}%,var(--surface-2) ${started}% 100%)"><i style="width:${done}%;background:${pc(b.per)}"></i></div>`;
+  return `<div class="bar" style="background:linear-gradient(to right,color-mix(in srgb,${color} 30%,var(--surface-2)) 0 ${started}%,var(--surface-2) ${started}% 100%)"><i style="width:${done}%;background:${color}"></i></div>`;
 }
+const blockBar = (b, st) => progBar(pc(b.per), st);
 // текущая стопка: первая непройденная, иначе первая невыученная, иначе последняя
 function currentBlock(){
   return BLOCKS.find(b => blockStats(b).seen < b.cards.length)
@@ -448,6 +461,8 @@ function renderNav(){
   document.getElementById('tabbar').innerHTML = VIEWS.map(v=>`<button type="button" data-nav="${v.id}" ${view===v.id?'aria-current="page"':''}>${ICONS[v.id]}<span>${v.label}</span></button>`).join('');
 }
 document.addEventListener('click', e => {
+  const tp = e.target.closest('[data-go-top]');
+  if (tp){ e.preventDefault(); openTop(); return; }
   const g = e.target.closest('[data-go-core]');
   if (g){ e.preventDefault(); startCore(+g.dataset.goCore); return; }
   const st = e.target.closest('[data-stack]');
@@ -464,6 +479,12 @@ function startCore(k){
   S.core = k; S.mode = 'free'; S.scope = ALL_CH.slice(); S.cats = CATS.map(c=>c.id); save();
   session = buildSession();
   view = 'cards'; viewArg = null; render(); window.scrollTo({top:0});
+}
+// открыть топ-40: с главной или по ссылке #top40
+function openTop(){
+  if (!hasTop) return;
+  S.mode = 'top'; save();
+  openBlock = null; session = null; view = 'cards'; viewArg = null; render(); window.scrollTo({top:0});
 }
 // открыть путь по стопкам ядра (без аргумента – список, с номером – саму стопку)
 function openStacks(n){
@@ -567,6 +588,7 @@ function renderHome(){
   const deck0 = coreSize(0);
   const curB = hasBlocks ? currentBlock() : null;
   const coreL = hasBlocks ? BLOCKS.reduce((s,b)=>s+b.cards.filter(learned).length, 0) : 0;
+  const topL = hasTop ? TOP_CARDS.filter(learned).length : 0;
   const L = deck.filter(learned).length;
   const qCount = CHS.reduce((s,c)=>s+(c.mcq||[]).length+(c.sequences||[]).length,0);
   const lastTest = S.tests[S.tests.length-1];
@@ -593,17 +615,19 @@ function renderHome(){
       <div><span class="v">${lastTest? Math.round(lastTest.score/lastTest.n*100)+'%' : '–'}</span><span class="k">${lastTest? 'последний тест' : 'тестов ещё не было'}</span></div>
     </div>
     <div class="actions">
-      ${hasBlocks?`<button class="action lead" type="button" data-go-core="300"><span class="t">Ядро ${BLOCKS.length} стопками</span><span class="d">${CORE_TOTAL} самых спрашиваемых карточек, разложенных по сюжетам: ${coreL?`выучено ${coreL} из ${CORE_TOTAL}, сейчас стопка ${curB.n} – «${esc(curB.title)}»`:`начните со стопки 1 – «${esc(BLOCKS[0].title)}», ${BLOCKS[0].cards.length} карточек`}.</span></button>`
-      :hasCore?`<button class="action lead" type="button" data-go-core="300"><span class="t">Учить ядро · ${coreSize(300)} ${plural(coreSize(300),'карточка','карточки','карточек')}</span><span class="d">Отобраны так, чтобы закрыть ${CORE_COV[300]} % банка вопросов. Нажмите – и сразу начнётся сессия.</span></button>`:''}
+      ${hasTop?`<button class="action lead" type="button" data-go-top><span class="t">Топ-40 карточек</span><span class="d">Всё, что нужно для ${PAST_N} заданий прошлого варианта 26.06.26. ${topL?`Выучено ${topL} из ${TOP_CARDS.length}.`:`Если до экзамена часы, начните отсюда.`}</span></button>`:''}
+      ${hasBlocks?`<button class="action${hasTop?'':' lead'}" type="button" data-go-core="300"><span class="t">Ядро ${BLOCKS.length} стопками</span><span class="d">${CORE_TOTAL} самых спрашиваемых карточек, разложенных по сюжетам: ${coreL?`выучено ${coreL} из ${CORE_TOTAL}, сейчас стопка ${curB.n} – «${esc(curB.title)}»`:`начните со стопки 1 – «${esc(BLOCKS[0].title)}», ${BLOCKS[0].cards.length} карточек`}.</span></button>`
+      :hasCore?`<button class="action${hasTop?'':' lead'}" type="button" data-go-core="300"><span class="t">Учить ядро · ${coreSize(300)} ${plural(coreSize(300),'карточка','карточки','карточек')}</span><span class="d">Отобраны так, чтобы закрыть ${CORE_COV[300]} % банка вопросов. Нажмите – и сразу начнётся сессия.</span></button>`:''}
       <a class="action" href="exam.html" style="text-decoration:none"><span class="t">72 часа до экзамена</span><span class="d">Формат очного теста, план на три дня, термины курса и ключ к варианту ВШЭ.</span></a>
       <a class="action" href="minimum.html" style="text-decoration:none"><span class="t">Прочитать всё подряд</span><span class="d">Конспекты 22 глав одним текстом, лента правителей и 200 ключевых дат. Начните отсюда, если готовитесь с нуля.</span></a>
-      <button class="action" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">Стопки ядра или своя выборка: любые главы и категории.</span></button>
+      <button class="action" type="button" data-nav="cards"><span class="t">Учить карточки</span><span class="d">${hasTop?'Топ-40, стопки ядра':'Стопки ядра'} или своя выборка: любые главы и категории.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="exam"><span class="t">Тест как на экзамене</span><span class="d">44 задания: 32 с выбором ответа и 12 на хронологию, 60 минут.</span></button>
       <button class="action" type="button" data-nav="test" data-arg="past"><span class="t">Вариант 26.06.26</span><span class="d">Реальные вопросы прошлого экзамена, 14 штук.</span></button>
       <button class="action" type="button" data-nav="rulers"><span class="t">Лента правителей</span><span class="d">От Рюрика до наших дней: кто правил и что при нём произошло.</span></button>
     </div>
     <div class="panel stack" style="gap:8px">
       <span class="label">Если начинаете с нуля</span>
+      ${hasTop?`<p style="font-size:14.5px"><b>Если до экзамена часы</b>, учите только <a href="#" data-go-top>топ-40</a> – факты, без которых не решить ${PAST_N} заданий прошлого варианта. Когда карточки выучены, прогоните сам <a href="#" data-nav="test" data-arg="past">вариант 26.06.26</a>.</p>`:''}
       <p style="font-size:14.5px"><b>Если до экзамена дни, а не недели</b>, не беритесь за всю колоду — в ней ${deck0} ${plural(deck0,'карточка','карточки','карточек')}, и больше половины ни разу не встречается в банке вопросов. Учите <a href="#" data-go-core="300">ядро</a> — ${CORE_TOTAL} карточек, отобранных по тому, что банк спрашивает чаще всего.${hasBlocks?` Оно разложено на ${BLOCKS.length} стопок по 13–28 карточек: за раз берётся один сюжет, а не триста карточек подряд.`:''} Каркас под них — <a href="minimum.html">лента правителей и 200 дат</a>.</p>
       <p style="font-size:14.5px"><b>Если время есть</b>, идите по главам в порядке учебника: <b>1)</b> конспект главы, <b>2)</b> карточки главы, пока большинство не станет «помню», <b>3)</b> тест по главе. Раз в несколько дней — смешанный тест по всем пройденным главам: на экзамене эпохи перемешаны.</p>
     </div>
@@ -636,9 +660,73 @@ function buildBlockSession(b, mode){
   if (!cards.length) cards = b.cards;
   return {queue: cards.slice(), done:0, total:cards.length, flipped:false, tally:{no:0,mid:0,yes:0}, block:b.n};
 }
-const modeChips = () => !hasBlocks ? '' : `<div class="row">
-  <button class="chip" type="button" aria-pressed="${S.mode==='blocks'}" data-mode="blocks">Ядро стопками</button>
+// сессия по топ-40: карточки в порядке времени, как пункты хронологий
+function buildTopSession(mode){
+  let cards = TOP_CARDS;
+  if (mode === 'rest') cards = cards.filter(c => !learned(c));
+  if (!cards.length) cards = TOP_CARDS;
+  return {queue: cards.slice(), done:0, total:cards.length, flipped:false, tally:{no:0,mid:0,yes:0}, top:true};
+}
+const modeChips = () => !(hasBlocks || hasTop) ? '' : `<div class="row">
+  ${hasTop?`<button class="chip" type="button" aria-pressed="${S.mode==='top'}" data-mode="top">Топ-40</button>`:''}
+  ${hasBlocks?`<button class="chip" type="button" aria-pressed="${S.mode==='blocks'}" data-mode="blocks">Ядро стопками</button>`:''}
   <button class="chip" type="button" aria-pressed="${S.mode==='free'}" data-mode="free">Своя выборка</button></div>`;
+const tallyStats = t => `<div class="stats"><div><span class="v" style="color:var(--good)">${t.yes}</span><span class="k">помню</span></div><div><span class="v" style="color:var(--warn)">${t.mid}</span><span class="k">сомневаюсь</span></div><div><span class="v" style="color:var(--bad)">${t.no}</span><span class="k">не помню</span></div></div>`;
+const cardSideChips = () => `<div class="stack" style="gap:6px"><span class="label">Сторона карточки</span><div class="row">
+  <button class="chip" type="button" aria-pressed="${S.dir==='fwd'}" data-sdir="fwd">Название → факты</button>
+  <button class="chip" type="button" aria-pressed="${S.dir==='rev'}" data-sdir="rev">Факты → название</button></div></div>`;
+function renderTopPage(){
+  const st = blockStats({cards: TOP_CARDS});
+  const nSeq = D.pastExam.seq.length, nMcq = PAST_N - nSeq;
+  const list = TOP.map((x, i) => { const c = TOP_CARDS[i];
+    return `<div><span class="dt">${esc(x.d)}</span><span>${learned(c)?'<span style="color:var(--good)">✓</span> ':''}${esc(c.title)}<span class="ty">зад.&nbsp;${x.ex.map(e=>e.n).join(',&nbsp;')}</span></span></div>`; }).join('');
+  $app.innerHTML = `<div class="stack" style="gap:18px">
+    <div class="stack" style="gap:6px"><span class="label">Топ-40 · вариант 26.06.26</span>
+      <h1>Прошлый экзамен в ${st.total} карточках</h1>
+      <p class="muted">В варианте 26.06.26 было ${PAST_N} заданий: ${nMcq} ${plural(nMcq,'вопрос','вопроса','вопросов')} с выбором ответа и ${nSeq} на хронологию. Здесь всё, без чего их не решить, – по карточке на каждый пункт, в порядке времени.</p></div>
+    ${modeChips()}
+    <div class="panel stack" style="gap:12px">
+      <div class="row" style="justify-content:space-between"><span>Выучено <b class="mono">${st.learned}</b> из ${st.total}</span><span class="mono muted" style="font-size:13px">${st.mid?'в работе '+st.mid+' · ':''}показано ${st.seen}</span></div>
+      ${progBar('var(--accent)', st)}
+      <button class="btn primary block" type="button" data-top="all">${st.seen ? (st.left ? 'Пройти все заново' : 'Повторить все') : 'Начать'} · ${st.total}</button>
+      <div class="row">
+        ${st.seen && st.left ? `<button class="btn" type="button" data-top="rest">Только невыученные · ${st.left}</button>` : ''}
+        <button class="btn" type="button" data-top="test">Проверить: вариант 26.06.26</button>
+      </div>
+      ${cardSideChips()}
+      <p class="note" style="margin:0">На обороте каждой карточки – задание варианта, для которого она нужна. Карточка выучена после трёх «помню»; когда выучены все, прогоните сам вариант – должно выйти ${PAST_N} из ${PAST_N}.</p>
+    </div>
+    <details class="sec" open><summary><h3>Что внутри</h3><span class="c">${st.total}</span></summary>
+      <div class="evlist" style="margin:10px 0 4px">${list}</div></details>
+  </div>`;
+  $app.querySelectorAll('[data-sdir]').forEach(x => x.onclick = () => { S.dir = x.dataset.sdir; save(); renderCards(); });
+  $app.querySelectorAll('[data-top]').forEach(x => x.onclick = () => {
+    const m = x.dataset.top;
+    if (m === 'test'){ if (startTest('past')) nav('test'); return; }
+    session = buildTopSession(m); renderCards(); window.scrollTo({top:0});
+  });
+}
+function renderTopDone(){
+  const st = blockStats({cards: TOP_CARDS});
+  $app.innerHTML = `<div class="stack" style="gap:18px">
+    <span class="label">Топ-40 · вариант 26.06.26</span>
+    <h1>${session.total} ${plural(session.total,'карточка','карточки','карточек')} пройдено</h1>
+    ${tallyStats(session.tally)}
+    <div class="panel stack" style="gap:10px">
+      <div class="row" style="justify-content:space-between"><span>Выучено <b class="mono">${st.learned}</b> из ${st.total}</span>${st.left?`<span class="mono muted" style="font-size:13px">осталось ${st.left}</span>`:`<span class="mono" style="font-size:13px;color:var(--good)">все выучены</span>`}</div>
+      ${progBar('var(--accent)', st)}
+      <p class="note" style="margin:0">${st.left?'Карточка засчитывается как выученная после трёх «помню», так что колоду обычно проходят два-три раза.':`Теперь проверьте себя на самом варианте: ${PAST_N} заданий, должно выйти ${PAST_N} из ${PAST_N}.`}</p>
+    </div>
+    <div class="row">
+      ${st.left?`<button class="btn primary" type="button" id="again">Повторить невыученные · ${st.left}</button>`:''}
+      <button class="btn${st.left?'':' primary'}" type="button" id="pastTest">Проверить: вариант 26.06.26</button>
+      <button class="btn" type="button" id="setup">К топ-40</button>
+    </div></div>`;
+  const ag = document.getElementById('again');
+  if (ag) ag.onclick = () => { session = buildTopSession('rest'); renderCards(); window.scrollTo({top:0}); };
+  document.getElementById('pastTest').onclick = () => { session = null; if (startTest('past')) nav('test'); else renderCards(); };
+  document.getElementById('setup').onclick = () => { session = null; renderCards(); window.scrollTo({top:0}); };
+}
 function stackRow(b, cur){
   const st = blockStats(b);
   const done = st.learned === st.total;
@@ -695,9 +783,7 @@ function renderBlockPage(b){
         ${minN && minN < st.total ? `<button class="btn" type="button" data-run="min">Самое важное · ${minN}</button>` : ''}
         <button class="btn" type="button" data-run="test">Тест по стопке</button>
       </div>
-      <div class="stack" style="gap:6px"><span class="label">Сторона карточки</span><div class="row">
-        <button class="chip" type="button" aria-pressed="${S.dir==='fwd'}" data-sdir="fwd">Название → факты</button>
-        <button class="chip" type="button" aria-pressed="${S.dir==='rev'}" data-sdir="rev">Факты → название</button></div></div>
+      ${cardSideChips()}
       <p class="note" style="margin:0">${minN && minN < st.total ? `«Самое важное» – ${minN} ${plural(minN,'карточка','карточки','карточек')} стопки, входящие в сокращённое ядро на 150. ` : ''}Тест берёт 15 заданий банка по ${b.chs.length>1?'главам':'главе'} ${b.chs.join(', ')} – с выбором ответа и на хронологию.</p>
     </div>
     <details class="sec" open><summary><h3>Что внутри</h3><span class="c">${st.total}</span></summary>
@@ -733,21 +819,39 @@ function cardFront(c, dir){
   const hints = {event:'Когда? При ком? Что произошло?', person:'Кто это? Чем известен? При каком правителе?', culture:'Автор? Когда? С чем связано?', term:'Что означает?', ruler:'Годы правления? Главные события?'};
   return `${cardShelf(c)}<div class="front-title">${esc(c.title)}</div><p class="hint">${hints[c.kind]}</p><p class="flip-note">Нажмите на карточку или пробел, чтобы перевернуть</p>`;
 }
+// задания варианта 26.06.26, для которых нужна карточка из топ-40
+function examHook(c){
+  const x = TOP_BY_KEY[c.key];
+  if (!x) return '';
+  const P = D.pastExam, M = P.mcq.length;
+  return x.ex.map(e => {
+    const head = `<span class="label">Было в варианте 26.06.26 · задание ${e.n}</span>`;
+    if (e.n <= M){
+      const q = P.mcq[e.n-1];
+      return `<div class="exam-hook">${head}<p>${esc(q.q)}</p>${q.img && q.img !== c.d.img ? `<img src="${q.img}" alt="Изображение к заданию">` : ''}
+        <p>Ответ: <b>${esc(q.options[q.answer])}</b></p>${q.explain?`<p class="muted">${esc(q.explain)}</p>`:''}</div>`;
+    }
+    const q = P.seq[e.n-M-1], mine = q.items[e.i];
+    const sorted = q.items.slice().sort((a,b)=>keyOf(a)-keyOf(b));
+    return `<div class="exam-hook">${head}<p>${esc(q.q)}</p>
+      <div class="chain">${sorted.map((it,k)=>`${k?'<span class="arrow">→</span>':''}<span${it===mine?' class="me"':''}>${esc(it.t)} <span class="y">${esc(it.d)}</span></span>`).join('')}</div></div>`;
+  }).join('');
+}
 function cardBack(c){
-  const d = c.d; let h = '';
+  const d = c.d; let h = '', ai = '';
   if (c.kind==='event'){
     const r = RUL[d.ruler];
     h = `<div class="back-title">${esc(d.title)}</div>
       <span class="stamp">${esc(d.date)}</span>
       <dl class="kv">${r?`<dt>Правитель</dt><dd>${esc(r.name)} <span class="muted mono" style="font-size:12px">${esc(r.years)}</span></dd>`:''}<dt>Раздел</dt><dd>${CATL[d.type]}${d.par?` · §${d.par}`:''}</dd></dl>
       <p class="desc">${esc(d.desc)}</p>`;
-    h += aiSlot(`Тема: «${d.title}» (${d.date}). Правитель: ${r?r.name:''}. Что известно: ${d.desc}`);
+    ai = aiSlot(`Тема: «${d.title}» (${d.date}). Правитель: ${r?r.name:''}. Что известно: ${d.desc}`);
   } else if (c.kind==='person'){
     const rs = (d.rulers||[]).map(rulerShort).filter(Boolean).join(', ');
     h = `<div class="back-title">${esc(d.name)}</div><p class="desc">${esc(d.role)}</p>
       ${rs?`<dl class="kv"><dt>Эпоха</dt><dd>${esc(rs)}</dd></dl>`:''}
       ${(d.facts||[]).length?`<ul>${d.facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>`:''}`;
-    h += aiSlot(`Исторический деятель: ${d.name}. Роль: ${d.role}. Факты: ${(d.facts||[]).join('; ')}. Расскажи, кто это и чем он важен для экзамена.`);
+    ai = aiSlot(`Исторический деятель: ${d.name}. Роль: ${d.role}. Факты: ${(d.facts||[]).join('; ')}. Расскажи, кто это и чем он важен для экзамена.`);
   } else if (c.kind==='culture'){
     const r = RUL[d.ruler];
     h = `<div class="back-title">${esc(d.title)}</div>
@@ -757,20 +861,20 @@ function cardBack(c){
       <p class="desc">${esc(d.desc)}</p>
       ${d.look?`<p class="look"><b>Как узнать на картинке:</b> ${esc(d.look)}</p>`:''}
       ${['архитектура','живопись','иконопись','скульптура','артефакт','прикладное искусство','кино'].includes(d.kind)?`<a href="${imgSearch(d.title+(d.author?' '+d.author:''))}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Посмотреть изображения ↗</a>`:''}`;
-    h += aiSlot(`Памятник культуры: ${d.title}. Автор: ${d.author||'нет'}. Дата: ${d.date}. Связь с событиями: ${d.linked||'нет'}. Описание: ${d.desc}. Объясни, почему он важен и как его запомнить и узнать на изображении.`);
+    ai = aiSlot(`Памятник культуры: ${d.title}. Автор: ${d.author||'нет'}. Дата: ${d.date}. Связь с событиями: ${d.linked||'нет'}. Описание: ${d.desc}. Объясни, почему он важен и как его запомнить и узнать на изображении.`);
   } else if (c.kind==='term'){
     const r = RUL[d.ruler];
     h = `<div class="back-title">${esc(d.term)}</div>${d.date?`<span class="stamp">${esc(d.date)}</span>`:''}<p class="desc">${esc(d.def)}</p>${r?`<dl class="kv"><dt>Правитель</dt><dd>${esc(r.name)}</dd></dl>`:''}`;
-    h += aiSlot(`Историческое понятие: «${d.term}». Определение: ${d.def}. Объясни на примерах.`);
+    ai = aiSlot(`Историческое понятие: «${d.term}». Определение: ${d.def}. Объясни на примерах.`);
   } else if (c.kind==='ruler'){
     const evs = (rulerEvents[d.id]||[]);
     const top = evs.length > 12 ? evs.filter((e,i)=> i % Math.ceil(evs.length/12) === 0).slice(0,12) : evs;
     h = `<div class="back-title">${esc(d.name)}</div><span class="stamp">${esc(d.years)}</span><p class="desc">${esc(d.title)}</p>
       ${(rulerNotes[d.id]||[]).slice(0,1).map(t=>`<p class="desc">${esc(t)}</p>`).join('')}
       ${top.length?`<div class="evlist">${top.map(e=>`<div><span class="dt">${esc(e.date)}</span><span>${esc(e.title)}</span></div>`).join('')}</div>`:''}`;
-    h += aiSlot(`Правитель: ${d.name}, ${d.years}. Главные события: ${evs.slice(0,25).map(e=>e.title+' ('+e.date+')').join('; ')}. Расскажи о правлении и главных событиях, помоги запомнить.`);
+    ai = aiSlot(`Правитель: ${d.name}, ${d.years}. Главные события: ${evs.slice(0,25).map(e=>e.title+' ('+e.date+')').join('; ')}. Расскажи о правлении и главных событиях, помоги запомнить.`);
   }
-  return `${cardShelf(c)}<div class="back" style="margin-top:14px">${h}</div>`;
+  return `${cardShelf(c)}<div class="back" style="margin-top:14px">${h}${examHook(c)}${ai}</div>`;
 }
 const CORE_NOTE = {
   0: 'Вся колода целиком. Больше половины карточек ни разу не встречается в банке вопросов – если до экзамена дни, а не недели, берите ядро.',
@@ -795,6 +899,7 @@ function bindCore(after){
   });
 }
 function renderCards(){
+  if (!session && S.mode === 'top' && hasTop) return renderTopPage();
   if (!session && S.mode === 'blocks' && hasBlocks) return openBlock ? renderBlockPage(openBlock) : renderBlockList();
   if (!session){
     const deck = deckFor(S.scope, S.cats);
@@ -825,6 +930,7 @@ function renderCards(){
     document.getElementById('start').onclick = () => { session = buildSession(); renderCards(); };
     return;
   }
+  if (!session.queue.length && session.top) return renderTopDone();
   if (!session.queue.length){
     const t = session.tally;
     const bl = session.block ? blockByN(session.block) : null;
@@ -833,7 +939,7 @@ function renderCards(){
     $app.innerHTML = `<div class="stack" style="gap:18px">
       <span class="label">${bl ? `Стопка ${bl.n} из ${BLOCKS.length} · ${esc(bl.title)}` : 'Сессия завершена'}</span>
       <h1>${session.total} ${plural(session.total,'карточка','карточки','карточек')} пройдено</h1>
-      <div class="stats"><div><span class="v" style="color:var(--good)">${t.yes}</span><span class="k">помню</span></div><div><span class="v" style="color:var(--warn)">${t.mid}</span><span class="k">сомневаюсь</span></div><div><span class="v" style="color:var(--bad)">${t.no}</span><span class="k">не помню</span></div></div>
+      ${tallyStats(t)}
       ${bl?`<div class="panel stack" style="gap:10px">
         <div class="row" style="justify-content:space-between"><span>Выучено в стопке <b class="mono">${st.learned}</b> из ${st.total}</span>${st.left?`<span class="mono muted" style="font-size:13px">${st.mid?'в работе '+st.mid:''}${st.mid&&st.total-st.learned-st.mid?' · ':''}${st.total-st.learned-st.mid?'новых '+(st.total-st.learned-st.mid):''}</span>`:`<span class="mono" style="font-size:13px;color:var(--good)">стопка выучена</span>`}</div>
         ${blockBar(bl, st)}
@@ -858,8 +964,8 @@ function renderCards(){
   const pct = session.done/session.total*100;
   const bl = session.block ? blockByN(session.block) : null;
   $app.innerHTML = `<div class="card-stage">
-    <div class="row" style="justify-content:space-between"><button class="btn ghost back-link" type="button" id="quit">${bl?'← К стопке':'← Выборка'}</button><span class="boxes" title="Уровень знания">${[0,1,2].map(i=>`<i class="${b>i?'on':''}"></i>`).join('')}</span></div>
-    ${bl?`<span class="tag"><span class="sw" style="background:${pc(bl.per)}"></span>Стопка ${bl.n} из ${BLOCKS.length} · ${esc(bl.title)}</span>`:''}
+    <div class="row" style="justify-content:space-between"><button class="btn ghost back-link" type="button" id="quit">${bl?'← К стопке':session.top?'← Топ-40':'← Выборка'}</button><span class="boxes" title="Уровень знания">${[0,1,2].map(i=>`<i class="${b>i?'on':''}"></i>`).join('')}</span></div>
+    ${bl?`<span class="tag"><span class="sw" style="background:${pc(bl.per)}"></span>Стопка ${bl.n} из ${BLOCKS.length} · ${esc(bl.title)}</span>`:session.top?`<span class="tag"><span class="sw" style="background:var(--accent)"></span>Топ-40 · вариант 26.06.26</span>`:''}
     <div class="progress-line"><span>${session.done}/${session.total}</span><span class="bar"><i style="width:${pct}%"></i></span><span>осталось ${session.queue.length}</span></div>
     <article class="fc ${session.flipped?'flip':''}" id="fc" tabindex="0" style="--pc:${chColor(c.ch)}" aria-label="Карточка, нажмите чтобы перевернуть">${session.flipped ? cardBack(c) : cardFront(c, S.dir)}</article>
     ${session.flipped ? `<div class="rate">
@@ -1291,9 +1397,10 @@ function render(){
   else if (view==='notes') renderNotes();
 }
 const coreHash = () => { const m = /^#core(150|300)$/.exec(location.hash||''); return m ? +m[1] : 0; };
-window.addEventListener('hashchange', () => { const k = coreHash(); if (k) startCore(k); });
+const topHash = () => location.hash === '#top40';
+window.addEventListener('hashchange', () => { if (topHash()) return openTop(); const k = coreHash(); if (k) startCore(k); });
 const k0 = coreHash();
-if (hasCore && k0) startCore(k0); else render();
+if (hasTop && topHash()) openTop(); else if (hasCore && k0) startCore(k0); else render();
 })();
 </script>
 
